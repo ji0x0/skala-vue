@@ -11,13 +11,10 @@
   margin-top: 0;
 }
 
-.dashboard-wrapper > section {
-  margin-bottom: 16px;
-}
-
 .search-box,
 .weather-card-list,
-.weather-compare {
+.weather-compare,
+.base-dashboard-card {
   margin-bottom: 16px;
   padding: 16px;
   border: 1px solid #dddddd;
@@ -25,7 +22,8 @@
   background-color: #f8f9fa;
 }
 
-.search-box input {
+.search-box input,
+.search-bar input {
   width: 100%;
   box-sizing: border-box;
   padding: 9px 10px;
