@@ -45,6 +45,8 @@ const showDetail = (weather) => {
 </script>
 
 <template>
+  <h1 class="assignment-title">⛅ 과제 3: 컴포넌트 분리</h1>
+
   <div class="dashboard-wrapper">
     <BaseDashboardCard>
       <SearchBar

@@ -1,3 +1,48 @@
+.app-container {
+  max-width: 900px;
+  margin: 30px auto;
+}
+
+.assignment-title {
+  max-width: 800px;
+  margin: 30px auto 12px;
+}
+
+.navigation-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #dddddd;
+}
+
+.nav-item {
+  color: #495057;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nav-item.router-link-exact-active {
+  color: #1685d1;
+  border-bottom: 2px solid #1685d1;
+}
+
+.divider {
+  color: #adb5bd;
+}
+
+.api-message {
+  padding: 16px;
+  color: #3498db;
+  font-weight: 700;
+  text-align: center;
+}
+
+.api-message.error {
+  color: #d63031;
+}
+
 .dashboard-wrapper {
   max-width: 800px;
   margin: 30px auto;
@@ -69,11 +114,44 @@
   position: absolute;
   top: 14px;
   right: 14px;
-  padding: 6px 10px;
-  border: 1px solid #999999;
-  border-radius: 4px;
-  background-color: #ffffff;
-  cursor: pointer;
+}
+
+.detail-container {
+  min-height: 240px;
+}
+
+.info-card,
+.forecast-section,
+.air-quality-card {
+  margin-bottom: 18px;
+}
+
+.forecast-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.forecast-list .el-card__body {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  text-align: center;
+}
+
+.forecast-list img {
+  width: 64px;
+  height: 64px;
+}
+
+.forecast-list small {
+  color: #606266;
+}
+
+.air-quality-card p {
+  margin: 6px 0;
 }
 
 .weather-compare {

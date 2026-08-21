@@ -1,29 +1,69 @@
-# Vue.js 과제
-(과제 목적(소개),주요 과제 간략히 소개, 기술스택, 빠른 시작
-(사전요구사항, 설치방법, 의존성설치, 환경변수 설정, 실행, 브라우저 확인), 저장소 구조, 아키텍처 구성)
-## 과제 1. Weather Mockup
-Vue의 기본 디렉티브와 이벤트 처리를 활용한 지역별 날씨 화면입니다.
+# Vue.js 날씨 애플리케이션
 
-### 과제 요구사항
-- `v-for`를 사용한 날씨 카드 반복 출력
-- 도시 `id`를 `:key`에 바인딩
-- `v-if`, `v-else`를 사용한 기온별 라벨 출력
-- `:value`, `@input`을 사용한 한글 도시 검색
-- 카드 클릭 시 선택한 도시를 상태바에 표시
-- `@click.stop`을 사용한 이벤트 버블링 방지
-- 상세 날씨를 `window.alert`로 출력
+Vue 수업의 과제 1~8을 하나의 날씨 애플리케이션으로 발전시킨 프로젝트다. 목업 화면에서 시작해 Composition API, 컴포넌트, Vue Router, Pinia, Axios, Element Plus, 품질 검사와 배포 준비를 순서대로 적용했다.
 
-### 추가 구현 기능
-날씨 데이터에 `humidity`, `wind` 속성을 추가하여 습도와 풍속 정보를 안내하는 기능을 추가했습니다.  
+## 주요 기능
 
-두 도시의 날씨를 비교하는 기능을 추가했습니다.
-- `v-model`을 사용해 드롭다운에서 비교할 도시 선택
-- `v-for`로 도시 선택 옵션 반복 출력
-- `v-if`, `v-else-if`, `v-else`로 선택 상태에 따른 안내 및 비교 결과 출력
-- `Array.find()`를 사용하는 `getSelectedCity()` 함수로 선택한 도시 데이터 조회
+- 서울·부산·대구·광주·대전·울산의 실시간 날씨 조회
+- 도시 검색 및 상세 페이지 이동
+- 섭씨·화씨 단위 변경
+- OpenWeather 3시간 간격 단기 예보
+- Open-Meteo 실시간 대기질 조회
+- 로딩·오류·검색 결과 없음·404 화면 처리
 
+## 기술 스택
 
-### 주요 파일
-- `src/AppWeather.vue`
-- `src/components/WeatherMockup.vue`
-- `src/assets/WeatherStyle.css`
+- Vue 3, Vite
+- Vue Router, Pinia, Axios, Element Plus
+- OpenWeather Current Weather / 5 Day Forecast API
+- Open-Meteo Air Quality API
+- ESLint, oxlint, oxfmt
+
+## 실행 방법
+
+Node.js 20.19 이상이 필요하다.
+
+```bash
+npm install
+```
+
+프로젝트 최상위의 `.env.example`을 참고해 `.env` 파일을 만든다.
+
+```env
+VITE_OPENWEATHER_API_KEY=발급받은_API_키
+```
+
+```bash
+npm run dev
+```
+
+환경변수를 수정한 경우 개발 서버를 반드시 다시 시작한다.
+
+## 품질 검사와 빌드
+
+```bash
+npm run lint:eslint -- --no-fix
+npm run build
+npm run preview
+```
+
+빌드 결과는 `dist/` 폴더에 생성된다.
+
+## 주요 구조
+
+```text
+src/
+├── components/weather/   # 날씨 카드, 검색, 단위 변경 UI
+├── router/               # 화면 경로 규칙
+├── services/             # Axios API 요청 함수
+├── stores/               # Pinia 단위 설정
+├── views/                # 홈, 상세, 소개, 404 페이지
+├── App.vue               # 공통 레이아웃
+└── main.js               # Vue 앱 플러그인 등록
+```
+
+## 배포 준비
+
+Vercel에서 이 GitHub 저장소를 가져온 뒤 프로젝트 환경변수에 `VITE_OPENWEATHER_API_KEY`를 등록하고 배포한다. `vercel.json`은 `/weather/city_01` 같은 주소로 직접 접속해도 Vue Router가 화면을 표시하도록 설정한다.
+
+`VITE_` 환경변수는 브라우저 번들에 포함된다. 수업용 프론트엔드 과제에서는 사용할 수 있지만 실제 서비스에서는 서버 API를 중간에 두어 OpenWeather 키를 보호해야 한다.

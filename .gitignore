@@ -37,3 +37,12 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+#API
+.env
+
+# 작업 중 생성한 단계별 백업 파일
+*.before*
+
+# 임시 작업 폴더
+tmp/

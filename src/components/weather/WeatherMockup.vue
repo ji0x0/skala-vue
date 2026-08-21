@@ -40,6 +40,8 @@ const showDetail = (weather) => {
 </script>
 
 <template>
+  <h1 class="assignment-title">⛅ 과제 1: 날씨 목업</h1>
+
   <div class="dashboard-wrapper">
     <!-- 도시 검색 -->
     <section class="search-box">

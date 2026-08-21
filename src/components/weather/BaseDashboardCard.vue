@@ -1,5 +1,5 @@
 <template>
-  <section class="base-dashboard-card">
+  <el-card class="base-dashboard-card" shadow="hover">
     <slot></slot>
-  </section>
+  </el-card>
 </template>
