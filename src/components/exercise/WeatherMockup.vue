@@ -142,3 +142,110 @@ const showDetail = (weather) => {
     </section>
   </div>
 </template>
+
+<style scoped>
+.search-box,
+.weather-card-list,
+.weather-compare {
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+}
+
+.search-box input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 10px;
+  border: 1px solid #bbbbbb;
+  border-radius: 4px;
+}
+
+.weather-card {
+  position: relative;
+  margin-bottom: 10px;
+  padding: 14px;
+  border: 1px solid #d8d8d8;
+  border-radius: 8px;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.weather-card:last-child {
+  margin-bottom: 0;
+}
+
+.weather-card h4,
+.weather-card p {
+  margin: 0 0 8px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.badge.hot {
+  background-color: #ff5d73;
+}
+
+.badge.cool {
+  background-color: #32b5e8;
+}
+
+.btn-detail {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 6px 12px;
+  border: 1px solid #bbbbbb;
+  border-radius: 4px;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+/* 지역별 날씨 비교 (개인 추가 기능) */
+.weather-compare {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.weather-compare > h3,
+.weather-compare > p {
+  flex-basis: 100%;
+}
+
+.weather-compare > label {
+  flex: 1;
+  font-weight: bold;
+}
+
+.weather-compare select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  padding: 10px;
+}
+
+.compare-result {
+  display: flex;
+  flex-basis: 100%;
+  gap: 16px;
+}
+
+.compare-card {
+  flex: 1;
+  padding: 15px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  background-color: #f5f9ff;
+}
+</style>

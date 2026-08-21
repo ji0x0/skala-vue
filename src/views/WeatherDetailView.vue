@@ -145,3 +145,44 @@ const formatForecastTime = (dateTime) =>
     </el-button>
   </div>
 </template>
+
+<style scoped>
+.detail-container {
+  min-height: 240px;
+}
+
+.info-card,
+.forecast-section,
+.air-quality-card {
+  margin-bottom: 18px;
+}
+
+.forecast-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+/* el-card 내부 요소는 scoped 범위를 넘어가므로 :deep()으로 선택한다. */
+.forecast-list :deep(.el-card__body) {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  text-align: center;
+}
+
+.forecast-list img {
+  width: 64px;
+  height: 64px;
+}
+
+.forecast-list small {
+  color: #606266;
+}
+
+.air-quality-card p {
+  margin: 6px 0;
+}
+</style>

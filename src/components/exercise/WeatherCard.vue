@@ -40,3 +40,46 @@ const displayTemp = computed(() => {
     </el-button>
   </div>
 </template>
+
+<style scoped>
+.weather-card {
+  position: relative;
+  margin-bottom: 10px;
+  padding: 14px;
+  border: 1px solid #d8d8d8;
+  border-radius: 8px;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.weather-card:last-child {
+  margin-bottom: 0;
+}
+
+.weather-card h4,
+.weather-card p {
+  margin: 0 0 8px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.badge.hot {
+  background-color: #ff5d73;
+}
+
+.badge.cool {
+  background-color: #32b5e8;
+}
+
+.btn-detail {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+</style>

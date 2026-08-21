@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import BaseDashboardCard from '@/components/weather/BaseDashboardCard.vue'
-import SearchBar from '@/components/weather/SearchBar.vue'
-import WeatherCard from '@/components/weather/WeatherCard.vue'
+import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
+import SearchBar from '@/components/exercise/SearchBar.vue'
+import WeatherCard from '@/components/exercise/WeatherCard.vue'
 import { fetchCurrentWeather } from '@/services/weatherApi.js'
 
 const router = useRouter()

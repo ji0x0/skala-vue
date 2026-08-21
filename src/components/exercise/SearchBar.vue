@@ -22,3 +22,17 @@ defineEmits(['update-query'])
     </p>
   </div>
 </template>
+
+<style scoped>
+.search-bar input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 10px;
+  border: 1px solid #bbbbbb;
+  border-radius: 4px;
+}
+
+.search-bar p {
+  margin: 8px 0 0;
+}
+</style>

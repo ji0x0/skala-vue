@@ -1,6 +1,6 @@
 
 <script setup>
-import UnitToggler from '@/components/weather/UnitToggler.vue'
+import UnitToggler from '@/components/exercise/UnitToggler.vue'
 </script>
 
 <template>
