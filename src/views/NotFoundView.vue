@@ -2,46 +2,28 @@
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
-const goHome = () => {
-  router.push({ name: 'WeatherHome' })
-}
 </script>
 
 <template>
-  <div class="not-found-container">
-    <div class="not-found-content">
-      <div class="error-icon">☀️❓</div>
-      <h2>페이지를 찾을 수 없습니다.</h2>
-      <p>요청하신 주소가 존재하지 않거나 아직 개발되지 않았습니다.</p>
-      <button class="home-button" @click="goHome">날씨 메인으로 이동</button>
-    </div>
-  </div>
+  <el-result
+    icon="warning"
+    title="404 — 페이지를 찾을 수 없습니다"
+    sub-title="요청하신 주소가 존재하지 않거나 아직 준비되지 않은 화면입니다."
+  >
+    <template #extra>
+      <div class="actions">
+        <el-button type="primary" @click="router.push('/')">브리핑 화면으로 이동</el-button>
+        <el-button @click="router.back()">이전 화면으로</el-button>
+      </div>
+    </template>
+  </el-result>
 </template>
 
 <style scoped>
-.not-found-container {
+.actions {
   display: flex;
-  min-height: 50vh;
-  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
   justify-content: center;
-}
-
-.not-found-content {
-  text-align: center;
-}
-
-.error-icon {
-  margin-bottom: 20px;
-  font-size: 5rem;
-}
-
-.home-button {
-  padding: 12px 30px;
-  border: 0;
-  border-radius: 30px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
 }
 </style>

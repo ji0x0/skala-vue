@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useConfigStore } from '@/stores/configStore.js'
+import { findSiteById } from '@/data/sites.js'
 import { fetchAirQuality, fetchCurrentWeather, fetchForecast } from '@/services/weatherApi.js'
 
 const route = useRoute()
@@ -14,21 +15,59 @@ const airQuality = ref(null)
 const isLoading = ref(false)
 const loadError = ref('')
 
-const cityMapping = {
-  city_01: { query: 'Seoul,KR', city: '서울' },
-  city_02: { query: 'Busan,KR', city: '부산' },
-  city_03: { query: 'Daegu,KR', city: '대구' },
-  city_04: { query: 'Gwangju,KR', city: '광주' },
-  city_05: { query: 'Daejeon,KR', city: '대전' },
-  city_06: { query: 'Ulsan,KR', city: '울산' },
+const site = computed(() => findSiteById(route.params.cityId))
+
+const convertTemp = (temp) => {
+  if (configStore.unit === 'fahrenheit') {
+    return Math.round((temp * 9) / 5 + 32)
+  }
+
+  return Math.round(temp * 10) / 10
 }
 
-onMounted(async () => {
-  const id = route.params.cityId
-  const targetCity = cityMapping[id]
+const displayTemp = computed(() => (cityData.value ? convertTemp(cityData.value.temp) : 0))
 
-  if (!targetCity) {
-    loadError.value = '해당 도시 정보를 찾을 수 없습니다.'
+/** 공정 관점에서 지금 무엇을 신경 써야 하는지 알려준다. */
+const processAdvice = computed(() => {
+  if (!cityData.value) return []
+
+  const advice = []
+  const { temp, humidity, wind } = cityData.value
+
+  if (temp >= 30) advice.push('고온 구간입니다. 설비 과열과 작업자 온열질환에 유의하세요.')
+  if (temp <= 0) advice.push('영하 구간입니다. 배관 동결과 저온 취성에 유의하세요.')
+  if (humidity >= 80) advice.push('다습 구간입니다. 도장·건조 공정 품질과 결로를 점검하세요.')
+  if (humidity <= 30) advice.push('건조 구간입니다. 정전기와 분진 관리를 강화하세요.')
+  if (wind >= 10) advice.push('강풍입니다. 옥외 자재 적치와 크레인 작업을 점검하세요.')
+  if (advice.length === 0) advice.push('현재 환경 조건은 정상 범위입니다.')
+
+  return advice
+})
+
+/** 대기질 지수 등급 */
+const aqiLevel = computed(() => {
+  if (!airQuality.value) return { type: 'info', label: '측정 중' }
+
+  const aqi = airQuality.value.european_aqi
+
+  if (aqi <= 20) return { type: 'success', label: '좋음' }
+  if (aqi <= 40) return { type: 'success', label: '양호' }
+  if (aqi <= 60) return { type: 'warning', label: '보통' }
+  if (aqi <= 80) return { type: 'warning', label: '나쁨' }
+
+  return { type: 'danger', label: '매우 나쁨' }
+})
+
+const formatForecastTime = (dateTime) =>
+  new Intl.DateTimeFormat('ko-KR', {
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+  }).format(new Date(dateTime.replace(' ', 'T')))
+
+onMounted(async () => {
+  if (!site.value) {
+    loadError.value = '해당 사업장 정보를 찾을 수 없습니다.'
     return
   }
 
@@ -36,17 +75,22 @@ onMounted(async () => {
   loadError.value = ''
 
   try {
-    const response = await fetchCurrentWeather(targetCity.query)
-
+    // 예보와 대기질 조회에는 좌표가 필요하므로 현재 날씨를 먼저 기다린다.
+    const response = await fetchCurrentWeather(site.value.query)
     const raw = response.data
+
     cityData.value = {
-      city: targetCity.city,
+      city: site.value.city,
       temp: raw.main.temp,
+      feelsLike: raw.main.feels_like,
       condition: raw.weather[0].description,
+      icon: raw.weather[0].icon,
       humidity: raw.main.humidity,
       wind: raw.wind.speed,
+      pressure: raw.main.pressure,
     }
 
+    // 서로 독립적인 두 요청만 병렬로 처리한다.
     const [forecastResponse, airQualityResponse] = await Promise.all([
       fetchForecast(raw.coord.lat, raw.coord.lon),
       fetchAirQuality(raw.coord.lat, raw.coord.lon),
@@ -67,94 +111,158 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
-
-const displayTemp = computed(() => {
-  if (!cityData.value) return 0
-
-  const rawTemp = cityData.value.temp
-  if (configStore.unit === 'fahrenheit') {
-    return Math.round((rawTemp * 9) / 5 + 32)
-  }
-
-  return rawTemp
-})
-
-const convertTemp = (temp) => {
-  if (configStore.unit === 'fahrenheit') {
-    return Math.round((temp * 9) / 5 + 32)
-  }
-
-  return Math.round(temp)
-}
-
-const formatForecastTime = (dateTime) =>
-  new Intl.DateTimeFormat('ko-KR', {
-    month: 'numeric',
-    day: 'numeric',
-    hour: 'numeric',
-  }).format(new Date(dateTime.replace(' ', 'T')))
 </script>
 
 <template>
   <div
     v-loading="isLoading"
     class="detail-container"
-    element-loading-text="상세 날씨를 불러오는 중입니다..."
+    element-loading-text="상세 기상 정보를 불러오는 중입니다..."
   >
-    <h3>📊 지역별 상세 기상 관측 정보</h3>
-    <hr />
+    <el-page-header @back="router.push('/')">
+      <template #content>
+        <strong>📊 {{ site ? site.siteName : '사업장' }} 기상 상세</strong>
+      </template>
+    </el-page-header>
 
-    <p v-if="isLoading" class="api-message">상세 날씨 데이터를 불러오는 중입니다...</p>
-    <p v-else-if="loadError" class="api-message error">{{ loadError }}</p>
+    <el-result
+      v-if="!site"
+      icon="warning"
+      title="사업장을 찾을 수 없습니다"
+      sub-title="주소의 사업장 코드를 확인해 주세요."
+    >
+      <template #extra>
+        <el-button type="primary" @click="router.push('/')">브리핑으로 돌아가기</el-button>
+      </template>
+    </el-result>
 
-    <el-card v-else-if="cityData" class="info-card" shadow="hover">
-      <h4>📍 지정 지역: {{ cityData.city }}</h4>
-      <p>
-        실시간 기온: <strong>{{ displayTemp }}{{ configStore.unitSymbol }}</strong>
-      </p>
-      <p>기상 현황: {{ cityData.condition }}</p>
-      <p>대기 습도: {{ cityData.humidity }}%</p>
-      <p>현재 풍속: {{ cityData.wind }}m/s</p>
-    </el-card>
+    <template v-else>
+      <p v-if="loadError" class="api-message error">{{ loadError }}</p>
 
-    <section v-if="forecastList.length" class="forecast-section">
-      <h3>🗓️ OpenWeather 단기 예보</h3>
-      <div class="forecast-list">
-        <el-card v-for="forecast in forecastList" :key="forecast.time" shadow="hover">
-          <strong>{{ formatForecastTime(forecast.time) }}</strong>
+      <el-card v-if="cityData" class="info-card" shadow="hover">
+        <div class="current-head">
           <img
-            :src="`https://openweathermap.org/img/wn/${forecast.icon}@2x.png`"
-            :alt="forecast.condition"
+            :src="`https://openweathermap.org/img/wn/${cityData.icon}@2x.png`"
+            :alt="cityData.condition"
           />
-          <span>{{ convertTemp(forecast.temp) }}{{ configStore.unitSymbol }}</span>
-          <small>{{ forecast.condition }}</small>
-        </el-card>
+          <div>
+            <h3>{{ displayTemp }}{{ configStore.unitSymbol }}</h3>
+            <p>{{ cityData.condition }} · {{ site.city }} · {{ site.process }} 공정</p>
+          </div>
+        </div>
+
+        <el-divider />
+
+        <div class="stat-row">
+          <el-statistic
+            title="체감 기온"
+            :value="convertTemp(cityData.feelsLike)"
+            :precision="1"
+            :suffix="configStore.unitSymbol"
+          />
+          <el-statistic title="대기 습도" :value="cityData.humidity" suffix="%" />
+          <el-statistic title="현재 풍속" :value="cityData.wind" :precision="1" suffix="m/s" />
+          <el-statistic title="기압" :value="cityData.pressure" suffix="hPa" />
+        </div>
+      </el-card>
+
+      <el-card v-if="cityData" class="advice-card" shadow="hover">
+        <template #header><strong>🧭 공정 운영 참고사항</strong></template>
+        <ul class="advice-list">
+          <li v-for="(item, index) in processAdvice" :key="index">{{ item }}</li>
+        </ul>
+      </el-card>
+
+      <section v-if="forecastList.length" class="forecast-section">
+        <h3>🗓️ 단기 예보 (OpenWeather 3시간 간격)</h3>
+        <div class="forecast-list">
+          <el-card v-for="forecast in forecastList" :key="forecast.time" shadow="hover">
+            <strong>{{ formatForecastTime(forecast.time) }}</strong>
+            <img
+              :src="`https://openweathermap.org/img/wn/${forecast.icon}@2x.png`"
+              :alt="forecast.condition"
+            />
+            <span>{{ convertTemp(forecast.temp) }}{{ configStore.unitSymbol }}</span>
+            <small>{{ forecast.condition }}</small>
+          </el-card>
+        </div>
+      </section>
+
+      <el-card v-if="airQuality" class="air-quality-card" shadow="hover">
+        <template #header>
+          <div class="card-header">
+            <strong>🌿 실시간 대기질 (Open-Meteo / CAMS)</strong>
+            <el-tag :type="aqiLevel.type" size="small">{{ aqiLevel.label }}</el-tag>
+          </div>
+        </template>
+        <div class="stat-row">
+          <el-statistic title="유럽 대기질 지수" :value="airQuality.european_aqi" />
+          <el-statistic title="미세먼지 PM10" :value="airQuality.pm10" suffix="㎍/㎥" />
+          <el-statistic title="초미세먼지 PM2.5" :value="airQuality.pm2_5" suffix="㎍/㎥" />
+        </div>
+        <small class="hint">클린룸·도장 공정은 외기 유입 필터 관리에 참고하세요.</small>
+      </el-card>
+
+      <div class="actions">
+        <el-button type="primary" plain @click="router.push('/')">← 브리핑으로 돌아가기</el-button>
+        <el-button @click="router.push(`/solar/${site.region}`)">
+          이 사업장 태양광 발전 보기
+        </el-button>
       </div>
-    </section>
-
-    <el-card v-if="airQuality" class="air-quality-card" shadow="hover">
-      <template #header><strong>🌿 Open-Meteo 실시간 대기질</strong></template>
-      <p>유럽 대기질 지수: {{ airQuality.european_aqi }}</p>
-      <p>미세먼지(PM10): {{ airQuality.pm10 }}㎍/㎥</p>
-      <p>초미세먼지(PM2.5): {{ airQuality.pm2_5 }}㎍/㎥</p>
-      <small>대기질 데이터 제공: Open-Meteo / CAMS</small>
-    </el-card>
-
-    <el-button type="primary" plain @click="router.push('/')">
-      ← 메인 대시보드로 돌아가기
-    </el-button>
+    </template>
   </div>
 </template>
 
 <style scoped>
 .detail-container {
-  min-height: 240px;
+  min-height: 260px;
 }
 
 .info-card,
+.advice-card,
 .forecast-section,
 .air-quality-card {
-  margin-bottom: 18px;
+  margin-top: 18px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.current-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.current-head img {
+  width: 72px;
+  height: 72px;
+}
+
+.current-head h3 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.current-head p {
+  margin: 2px 0 0;
+  color: #909399;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 14px;
+}
+
+.advice-list {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.8;
 }
 
 .forecast-list {
@@ -182,7 +290,16 @@ const formatForecastTime = (dateTime) =>
   color: #606266;
 }
 
-.air-quality-card p {
-  margin: 6px 0;
+.hint {
+  display: block;
+  margin-top: 10px;
+  color: #909399;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
 }
 </style>

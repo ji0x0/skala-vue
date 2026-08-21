@@ -1,0 +1,145 @@
+/**
+ * 실습 아카이브 콘텐츠.
+ * component 필드가 있는 항목은 상세 화면에서 당시 실습 결과물을 실제로 렌더링한다.
+ */
+export const LABS = [
+  {
+    step: 1,
+    title: 'Vue Syntax — 날씨 목업',
+    unit: 'Vue Syntax',
+    summary: 'v-for·v-if·이벤트 수식어로 정적 날씨 대시보드를 구성했다.',
+    requirements: [
+      'v-for 배열 렌더링과 :key에 id 바인딩',
+      '기온 25도 기준 조건부 렌더링(v-if / v-else)',
+      ':value와 @input을 이용한 한글 검색 입력 처리',
+      '카드 클릭 시 상태바 갱신, 상세보기는 @click.stop으로 버블링 차단',
+    ],
+    customization: [
+      '도시를 6개로 늘리고 습도·풍속 필드를 추가했다.',
+      'v-model 드롭다운 두 개로 지역별 날씨를 나란히 비교하는 섹션을 추가했다.',
+    ],
+    liveComponent: 'WeatherMockup',
+  },
+  {
+    step: 2,
+    title: 'Composition API — 반응형 상태 관리',
+    unit: 'Composition API',
+    summary: 'ref·computed·watch·watchEffect로 검색과 필터링을 반응형으로 처리했다.',
+    requirements: [
+      'searchQuery·selectedCityInfo·weatherList를 반응형 상태로 정의',
+      'computed로 검색어에 맞는 filteredWeatherList 생성',
+      'watch로 선택 도시 변화, watchEffect로 검색어 변화를 콘솔에 기록',
+      '검색어 없음·결과 있음·결과 없음 세 가지 경우를 화면에 구분 표시',
+    ],
+    customization: [
+      'alertThreshold(공정 경보 기준 온도)와 sortOrder 반응형 상태를 추가했다.',
+      'sortedWeatherList와 processRiskSummary Computed를 추가했다.',
+      '경보 기준 변화와 표시 건수 변화를 감시하는 Watcher 2종을 추가했다.',
+    ],
+    liveComponent: 'WeatherComposition',
+  },
+  {
+    step: 3,
+    title: 'Vue Components — 컴포넌트 분리',
+    unit: 'Vue Components',
+    summary: '기능 변경 없이 하나의 화면을 4개 컴포넌트로 분리했다.',
+    requirements: [
+      'WeatherParent가 모든 반응형 데이터를 보유',
+      'BaseDashboardCard에 <slot>을 두어 카드 디자인을 공통화',
+      'SearchBar는 props로 받고 update-query 이벤트로 부모에 전달',
+      'WeatherCard는 select-card·click-detail 이벤트를 부모에 전달',
+      '컴포넌트 디자인을 각각 <style scoped>로 분리',
+    ],
+    customization: [
+      '전역 CSS에 몰려 있던 카드·검색창 스타일을 각 컴포넌트의 scoped 스타일로 옮겼다.',
+      '전역 스타일시트는 앱 셸과 공통 상태 표시 규칙만 남겼다.',
+    ],
+    liveComponent: 'WeatherParent',
+  },
+  {
+    step: 4,
+    title: 'Vue Router — 화면 전환',
+    unit: 'Vue Router',
+    summary: '단일 화면을 라우팅 기반 다중 페이지 구조로 전환했다.',
+    requirements: [
+      '지연 로딩과 Catch-all 라우트 설정',
+      'App.vue에 RouterLink 내비게이션과 RouterView 배치',
+      '상세보기에서 window.alert를 제거하고 router.push로 이동',
+      ':cityId 동적 경로를 받아 상세 화면 구성',
+    ],
+    customization: [
+      '4개 View 전부를 지연 로딩으로 전환해 화면별 코드 분할을 적용했다.',
+      '실습 요구 View 외에 태양광 상세·실습 아카이브·실습 상세·트러블슈팅 View를 추가했다.',
+      '실습 컴포넌트를 components/exercise 폴더로 격리했다.',
+    ],
+    liveComponent: null,
+  },
+  {
+    step: 5,
+    title: 'Pinia — 전역 상태 관리',
+    unit: 'Pinia',
+    summary: '화면 간 공유가 필요한 상태를 Store로 옮겼다.',
+    requirements: [
+      'configStore에 unit state, unitSymbol getter, toggleUnit action 작성',
+      '내비게이션 바 옆에 UnitToggler 배치',
+      '메인과 상세 화면 모두에 단위 설정 반영',
+    ],
+    customization: [
+      'weatherStore를 추가해 사업장 날씨와 공정 위험 요약을 관리한다.',
+      'solarStore를 추가해 일사량과 예상 발전량을 계산한다.',
+      'exchangeStore를 추가해 환율과 등락률, 비용 코멘트를 관리한다.',
+    ],
+    liveComponent: null,
+  },
+  {
+    step: 6,
+    title: 'Axios — 외부 API 연동',
+    unit: 'Axios',
+    summary: '목업 데이터를 실제 API 응답으로 교체하고 API를 확장했다.',
+    requirements: [
+      'OpenWeather Current Weather API로 실제 날씨 조회',
+      'OpenWeather의 다른 API를 추가해 기능 확장',
+      '기타 외부 API를 추가해 기능 확장',
+    ],
+    customization: [
+      'OpenWeather 5 Day / 3 Hour Forecast로 단기 예보를 추가했다.',
+      'Open-Meteo Air Quality로 미세먼지와 대기질 지수를 추가했다.',
+      'Open-Meteo Forecast의 일사량으로 태양광 발전량을 추정한다.',
+      'Frankfurter 환율 API로 원자재 비용 변수를 추가했다.',
+      'API 호출을 services 폴더로 분리해 화면과 통신 코드를 나눴다.',
+    ],
+    liveComponent: null,
+  },
+  {
+    step: 7,
+    title: 'UI Libraries — Element Plus 적용',
+    unit: 'UI Libraries',
+    summary: '직접 작성한 UI를 외부 UI 라이브러리 컴포넌트로 교체했다.',
+    requirements: ['외부 UI 라이브러리를 선정해 기존 과제 화면에 자유롭게 적용'],
+    customization: [
+      '내비게이션을 el-menu로, 404 화면을 el-result로 교체했다.',
+      '실습 아카이브를 el-timeline, 트러블슈팅을 el-collapse로 구성했다.',
+      '요약 지표에 el-statistic과 el-tag를, 로딩에 v-loading을 적용했다.',
+    ],
+    liveComponent: null,
+  },
+  {
+    step: 8,
+    title: 'Build & Deployment — 품질 관리와 배포',
+    unit: 'Vite Build & Deployment',
+    summary: '정적 검사와 빌드를 통과시키고 배포 환경을 구성했다.',
+    requirements: [
+      'ESLint 검사에서 Error 제거',
+      'API 키를 환경변수로 분리하고 Git에 올라가지 않도록 처리',
+      '프로젝트 빌드 후 정적 호스팅',
+    ],
+    customization: [
+      '.env를 .gitignore에 등록하고 .env.example로 필요한 키를 안내한다.',
+      'SPA 직접 주소 접속을 위해 vercel.json에 rewrite 규칙을 추가했다.',
+      '단계별 백업 파일과 임시 폴더를 .gitignore에 추가해 저장소를 정리했다.',
+    ],
+    liveComponent: null,
+  },
+]
+
+export const findLabByStep = (step) => LABS.find((lab) => lab.step === Number(step))

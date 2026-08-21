@@ -1,112 +1,154 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
-import SearchBar from '@/components/exercise/SearchBar.vue'
-import WeatherCard from '@/components/exercise/WeatherCard.vue'
-import { fetchCurrentWeather } from '@/services/weatherApi.js'
+import { computed, onMounted, watch } from 'vue'
+import WeatherSummaryCard from '@/components/dashboard/WeatherSummaryCard.vue'
+import SolarCard from '@/components/dashboard/SolarCard.vue'
+import FuelPriceCard from '@/components/dashboard/FuelPriceCard.vue'
+import ExchangeCard from '@/components/dashboard/ExchangeCard.vue'
+import { useWeatherStore } from '@/stores/weatherStore.js'
+import { useSolarStore } from '@/stores/solarStore.js'
+import { useFuelStore } from '@/stores/fuelStore.js'
+import { useExchangeStore } from '@/stores/exchangeStore.js'
 
-const router = useRouter()
-const route = useRoute()
+const weatherStore = useWeatherStore()
+const solarStore = useSolarStore()
+const fuelStore = useFuelStore()
+const exchangeStore = useExchangeStore()
 
-const cities = [
-  { id: 'city_01', city: '서울', query: 'Seoul,KR' },
-  { id: 'city_02', city: '부산', query: 'Busan,KR' },
-  { id: 'city_03', city: '대구', query: 'Daegu,KR' },
-  { id: 'city_04', city: '광주', query: 'Gwangju,KR' },
-  { id: 'city_05', city: '대전', query: 'Daejeon,KR' },
-  { id: 'city_06', city: '울산', query: 'Ulsan,KR' },
-]
+const today = new Intl.DateTimeFormat('ko-KR', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  weekday: 'long',
+}).format(new Date())
 
-const weatherlist = ref([])
-const isLoading = ref(false)
-const loadError = ref('')
+/** 세 가지 지표를 한 문장으로 요약한 오늘의 브리핑 */
+const briefingLines = computed(() => {
+  const lines = []
 
-// 검색창에 입력
-const searchQuery = ref('')
-
-// 상태바에 표시할 문장
-const selectedCityInfo = ref('날씨 카드를 클릭해 보세요')
-
-const fetchRealTimeWeather = async () => {
-  isLoading.value = true
-  loadError.value = ''
-
-  try {
-    const responses = await Promise.all(
-      cities.map((item) =>
-        fetchCurrentWeather(item.query),
-      ),
+  if (weatherStore.summary.count > 0) {
+    lines.push(
+      weatherStore.summary.riskCount > 0
+        ? `공정 점검이 필요한 사업장이 ${weatherStore.summary.riskCount}곳 있습니다.`
+        : '전 사업장 환경 조건이 정상 범위입니다.',
     )
-
-    weatherlist.value = responses.map((response, index) => ({
-      id: cities[index].id,
-      city: cities[index].city,
-      temp: response.data.main.temp,
-      condition: response.data.weather[0].description,
-    }))
-  } catch (error) {
-    console.error('날씨 API 연동 실패:', error)
-    loadError.value = '실시간 날씨 데이터를 불러오지 못했습니다.'
-  } finally {
-    isLoading.value = false
-  }
-}
-
-/// 초기 마운트 시 주소창의 쿼리(?search=) 스트링 읽어서 상태 복원
-onMounted(() => {
-  if (route.query.search) {
-    searchQuery.value = route.query.search
   }
 
-  fetchRealTimeWeather()
+  if (solarStore.bestSite) {
+    lines.push(
+      `오늘 태양광 예상 발전량은 ${new Intl.NumberFormat('ko-KR').format(
+        solarStore.totalGenerationToday,
+      )}kWh입니다.`,
+    )
+  }
+
+  if (fuelStore.trend.length > 1) {
+    lines.push(fuelStore.costComment)
+  }
+
+  if (exchangeStore.history.length > 1) {
+    lines.push(exchangeStore.costComment)
+  }
+
+  return lines
 })
 
-// 타이핑될 때마다 주소창의 쿼리 스트링 값을 실시간 푸시 개편
-watch(searchQuery, (newQuery) => {
-  router.push({
-    path: route.path,
-      query: { search: newQuery || undefined },
-  })
-})
+const isAnyLoading = computed(
+  () =>
+    weatherStore.isLoading ||
+    solarStore.isLoading ||
+    fuelStore.isLoading ||
+    exchangeStore.isLoading,
+)
 
-const filteredWeatherList = computed(() => {
-  const query = searchQuery.value.trim()
-  if (!query) return weatherlist.value
-  return weatherlist.value.filter((item) => item.city.includes(query))
-})
-
-// 자식 카드 컴포넌트의 상세보기 신호를 받으면 해당 ID 주소로 라우터 점프 실행
-const handleDetailJump = (id) => {
-  router.push(`/weather/${id}`)
+const refreshAll = () => {
+  weatherStore.fetchAllSites()
+  solarStore.fetchAllSites()
+  fuelStore.fetchFuelPrices()
+  exchangeStore.fetchRates()
 }
+
+watch(
+  () => weatherStore.summary.riskCount,
+  (newCount, oldCount) => {
+    console.log(`[브리핑] 공정 점검 대상 사업장 ${oldCount}곳 -> ${newCount}곳`)
+  },
+)
+
+onMounted(refreshAll)
 </script>
 
 <template>
-  <div class="dashboard-wrapper">
-    <!-- 도시 검색 -->
-    <BaseDashboardCard v-loading="isLoading" element-loading-text="날씨를 불러오는 중입니다...">
-      <SearchBar :current-query="searchQuery" @update-query="(val) => searchQuery = val" />
-    </BaseDashboardCard>
+  <div class="briefing-view">
+    <section class="briefing-head">
+      <div>
+        <h2>오늘의 운영 브리핑</h2>
+        <small>{{ today }}</small>
+      </div>
+      <el-button type="primary" plain :loading="isAnyLoading" @click="refreshAll">
+        새로고침
+      </el-button>
+    </section>
 
-    <!-- 날씨 카드 목록-->
-    <BaseDashboardCard>
-      <h3>🏙️ 지역별 실시간 날씨 현황</h3>
+    <el-alert v-if="briefingLines.length" type="info" :closable="false" class="briefing-alert">
+      <ul class="briefing-list">
+        <li v-for="line in briefingLines" :key="line">{{ line }}</li>
+      </ul>
+    </el-alert>
 
-      <p v-if="isLoading" class="api-message">실시간 날씨 데이터를 불러오는 중입니다...</p>
-      <p v-else-if="loadError" class="api-message error">{{ loadError }}</p>
-
-      <template v-else>
-        <WeatherCard
-          v-for="item in filteredWeatherList"
-          :key="item.id"
-          :city-item="item"
-          @select-card="(msg) => selectedCityInfo = msg"
-          @click-detail="handleDetailJump(item.id)"
-        />
-        <p v-if="filteredWeatherList.length === 0" class="api-message">검색 결과가 없습니다.</p>
-      </template>
-    </BaseDashboardCard>
-    <div class="status-bar">{{ selectedCityInfo }}</div>
+    <div class="briefing-grid">
+      <WeatherSummaryCard class="span-2" />
+      <SolarCard class="span-2" />
+      <FuelPriceCard />
+      <ExchangeCard />
+    </div>
   </div>
 </template>
+
+<style scoped>
+.briefing-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.briefing-head h2 {
+  margin: 0 0 2px;
+}
+
+.briefing-head small {
+  color: #909399;
+}
+
+.briefing-alert {
+  margin-bottom: 20px;
+}
+
+.briefing-list {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.7;
+}
+
+.briefing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+@media (max-width: 820px) {
+  .briefing-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .span-2 {
+    grid-column: span 1;
+  }
+}
+</style>
