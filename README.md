@@ -2,7 +2,7 @@
 
 SKALA Full-Stack Engineering 과정의 Vue.js 실습 과제 1-8을 하나의 서비스로 발전시킨 프로젝트다.
 
-- 배포 주소: https://skala-vue-eight-delta.vercel.app
+- 배포 주소: https://skala-vue-factory-daily-briefing.vercel.app
 - 저장소: https://github.com/ji0x0/skala-vue
 
 ## 무엇을 만들었나
@@ -94,9 +94,9 @@ grep -r "실제_키_값" dist/assets/    # 결과가 없어야 정상
 | 2. Composition API | ref, computed, watch, watchEffect | 경보 기준 온도와 정렬 기준 상태 추가. 정렬 결과와 공정 리스크 요약 Computed 2종, Watcher 2종 추가 |
 | 3. Vue Components | 4개 컴포넌트로 분리, scoped 스타일 | 전역 CSS에 몰려 있던 카드·검색창 스타일을 각 컴포넌트로 이전. 대시보드 카드 4종, 실습 데모 5종, 내비게이션을 별도 컴포넌트로 작성 |
 | 4. Vue Router | 지연 로딩, Catch-all, 동적 경로 | View를 4개에서 8개로 확장(태양광 상세, 실습 아카이브, 실습 상세, 트러블슈팅). 전체 View 지연 로딩, `meta.title`로 문서 제목 자동 변경, 화면 전환 시 스크롤 초기화 |
-| 5. Pinia | configStore 1종 | Store 4종 추가(날씨, 태양광, 유가, 환율). 각 Store가 state·getters·actions와 로딩·오류 상태를 함께 관리 |
+| 5. Pinia | configStore 1종 | Store 4종 추가(날씨, 태양광, 유가, 환율). configStore에 화면 테마를 추가하고 설정을 localStorage에 저장해 재방문 시에도 유지 |
 | 6. Axios | OpenWeather 연동 및 API 확장 | 외부 API 7종 연동. 요청 함수를 `services/`로 분리. 좌표가 필요한 요청은 순차, 독립적인 요청은 `Promise.all`로 병렬 처리 |
-| 7. UI Libraries | 외부 UI 라이브러리 적용 | Element Plus를 내비게이션·표·타임라인·아코디언·통계·결과 화면까지 확대 적용 |
+| 7. UI Libraries | 외부 UI 라이브러리 적용 | Element Plus를 내비게이션·표·타임라인·아코디언·통계·결과 화면까지 확대 적용. 다크 테마 변수를 적용하고 설정 패널을 el-popover와 el-switch로 구성 |
 | 8. Build & Deployment | ESLint, 환경변수, 빌드, 배포 | API 키를 서버리스 함수로 이전해 브라우저 노출 차단. SPA 직접 접속 대응, 개발 서버용 함수 실행 플러그인 작성 |
 
 ### 과제에 없던 화면

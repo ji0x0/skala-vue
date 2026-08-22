@@ -119,7 +119,7 @@ const COMPONENT_MAP = [
 h4 {
   margin: 0 0 10px;
   padding-left: 8px;
-  border-left: 3px solid #409eff;
+  border-left: 3px solid var(--el-color-primary);
   font-size: 14px;
 }
 
@@ -136,9 +136,9 @@ h4 {
 /* 직접 만든 UI 스타일 */
 .plain-card {
   padding: 14px;
-  border: 1px solid #d8d8d8;
+  border: 1px solid var(--el-border-color-light);
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color);
 }
 
 .plain-search {
@@ -151,15 +151,15 @@ h4 {
   flex: 1;
   min-width: 0;
   padding: 7px 9px;
-  border: 1px solid #bbbbbb;
+  border: 1px solid var(--el-border-color);
   border-radius: 4px;
 }
 
 .plain-btn {
   padding: 7px 12px;
-  border: 1px solid #bbbbbb;
+  border: 1px solid var(--el-border-color);
   border-radius: 4px;
-  background-color: #f5f5f5;
+  background-color: var(--el-fill-color-light);
   cursor: pointer;
 }
 
@@ -193,7 +193,7 @@ h4 {
 }
 
 .plain-stat small {
-  color: #888888;
+  color: var(--el-text-color-secondary);
   font-size: 12px;
 }
 
@@ -204,7 +204,7 @@ h4 {
 .plain-echo,
 .ep-echo {
   margin-top: 10px;
-  color: #409eff;
+  color: var(--el-color-primary);
   font-size: 12px;
 }
 
@@ -227,7 +227,7 @@ h4 {
 .cost-list {
   margin: 10px 0 0;
   padding-left: 18px;
-  color: #606266;
+  color: var(--el-text-color-regular);
   font-size: 12px;
   line-height: 1.7;
 }

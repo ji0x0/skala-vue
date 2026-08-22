@@ -198,7 +198,7 @@ const CHECKLIST = [
 h4 {
   margin: 22px 0 8px;
   padding-left: 8px;
-  border-left: 3px solid #409eff;
+  border-left: 3px solid var(--el-color-primary);
   font-size: 14px;
 }
 
@@ -223,14 +223,14 @@ h4:first-of-type {
 
 .note {
   margin: 10px 0 0;
-  color: #606266;
+  color: var(--el-text-color-regular);
   line-height: 1.7;
 }
 
 code {
   padding: 1px 5px;
   border-radius: 4px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-light);
   font-size: 12px;
 }
 </style>

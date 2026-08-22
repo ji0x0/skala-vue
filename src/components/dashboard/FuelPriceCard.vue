@@ -5,10 +5,11 @@ const fuelStore = useFuelStore()
 
 const formatPrice = (value) => new Intl.NumberFormat('ko-KR').format(Math.round(value))
 
+/** 오피넷은 20260814 형태로 주므로 환율 카드와 같은 2026-08-14 형식으로 맞춘다. */
 const formatDate = (yyyymmdd) => {
   if (!yyyymmdd || yyyymmdd.length !== 8) return ''
 
-  return `${yyyymmdd.slice(4, 6)}.${yyyymmdd.slice(6, 8)}`
+  return `${yyyymmdd.slice(0, 4)}-${yyyymmdd.slice(4, 6)}-${yyyymmdd.slice(6, 8)}`
 }
 
 /** 스파크라인 폴리라인 좌표를 만든다. */
@@ -91,7 +92,7 @@ const sparklinePoints = (list, range) => {
 
 .headline {
   margin: 0 0 14px;
-  color: #303133;
+  color: var(--el-text-color-primary);
   font-weight: 600;
 }
 
@@ -108,7 +109,7 @@ const sparklinePoints = (list, range) => {
   gap: 10px;
   padding: 10px 12px;
   border-radius: 8px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-light);
 }
 
 .price-icon {
@@ -126,13 +127,13 @@ const sparklinePoints = (list, range) => {
 }
 
 .price-use {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .trend-box {
   padding: 12px;
   border-radius: 8px;
-  background-color: #fef0f0;
+  background-color: var(--el-color-danger-light-9);
 }
 
 .trend-head {
@@ -144,11 +145,11 @@ const sparklinePoints = (list, range) => {
 }
 
 .trend-head .up {
-  color: #f56c6c;
+  color: var(--el-color-danger);
 }
 
 .trend-head .down {
-  color: #67c23a;
+  color: var(--el-color-success);
 }
 
 .sparkline {
@@ -158,7 +159,7 @@ const sparklinePoints = (list, range) => {
 
 .sparkline polyline {
   fill: none;
-  stroke: #e6a23c;
+  stroke: var(--el-color-warning);
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
@@ -166,12 +167,12 @@ const sparklinePoints = (list, range) => {
 .trend-axis {
   display: flex;
   justify-content: space-between;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .hint {
   display: block;
   margin-top: 10px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 </style>

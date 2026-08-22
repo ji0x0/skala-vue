@@ -144,7 +144,7 @@ const run = async () => {
 h4 {
   margin: 0 0 8px;
   padding-left: 8px;
-  border-left: 3px solid #409eff;
+  border-left: 3px solid var(--el-color-primary);
   font-size: 14px;
 }
 
@@ -156,7 +156,7 @@ h4 {
 
 .api-group :deep(.el-radio-button__inner) {
   border-radius: 4px;
-  border-left: 1px solid #dcdfe6;
+  border-left: 1px solid var(--el-border-color-light);
 }
 
 .run-row {
@@ -175,8 +175,8 @@ h4 {
 .loading-box {
   padding: 20px;
   border-radius: 8px;
-  background-color: #f5f7fa;
-  color: #409eff;
+  background-color: var(--el-fill-color-light);
+  color: var(--el-color-primary);
   text-align: center;
   font-weight: 600;
 }
@@ -189,14 +189,14 @@ h4 {
 }
 
 .result-head small {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 pre {
   margin: 0;
   padding: 12px;
   border-radius: 8px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-light);
   max-height: 300px;
   overflow: auto;
   font-size: 11px;
@@ -205,14 +205,14 @@ pre {
 
 .note {
   margin: 16px 0 0;
-  color: #606266;
+  color: var(--el-text-color-regular);
   line-height: 1.7;
 }
 
 code {
   padding: 1px 5px;
   border-radius: 4px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-light);
   font-size: 12px;
 }
 

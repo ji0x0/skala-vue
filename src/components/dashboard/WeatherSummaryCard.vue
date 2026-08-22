@@ -105,7 +105,7 @@ const headline = computed(() => {
 
 .headline {
   margin: 0 0 14px;
-  color: #303133;
+  color: var(--el-text-color-primary);
   font-weight: 600;
 }
 
@@ -116,13 +116,13 @@ const headline = computed(() => {
   margin-bottom: 16px;
   padding: 12px;
   border-radius: 8px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-light);
 }
 
 .hint {
   display: block;
   margin-top: 8px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 :deep(.el-table__row) {

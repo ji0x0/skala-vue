@@ -91,7 +91,7 @@ const sparklinePoints = (list, range) => {
 
 .headline {
   margin: 0 0 14px;
-  color: #303133;
+  color: var(--el-text-color-primary);
   font-weight: 600;
 }
 
@@ -108,7 +108,7 @@ const sparklinePoints = (list, range) => {
   gap: 10px;
   padding: 10px 12px;
   border-radius: 8px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-light);
 }
 
 .rate-flag {
@@ -126,13 +126,13 @@ const sparklinePoints = (list, range) => {
 }
 
 .rate-note {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .trend-box {
   padding: 12px;
   border-radius: 8px;
-  background-color: #ecf5ff;
+  background-color: var(--el-color-primary-light-9);
 }
 
 .trend-head {
@@ -144,11 +144,11 @@ const sparklinePoints = (list, range) => {
 }
 
 .trend-head .up {
-  color: #f56c6c;
+  color: var(--el-color-danger);
 }
 
 .trend-head .down {
-  color: #67c23a;
+  color: var(--el-color-success);
 }
 
 .sparkline {
@@ -158,7 +158,7 @@ const sparklinePoints = (list, range) => {
 
 .sparkline polyline {
   fill: none;
-  stroke: #409eff;
+  stroke: var(--el-color-primary);
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
@@ -166,12 +166,12 @@ const sparklinePoints = (list, range) => {
 .trend-axis {
   display: flex;
   justify-content: space-between;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .hint {
   display: block;
   margin-top: 10px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 </style>

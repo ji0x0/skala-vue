@@ -31,8 +31,8 @@ import NavBar from '@/components/common/NavBar.vue'
 .app-footer {
   margin-top: 32px;
   padding-top: 16px;
-  border-top: 1px solid #e4e7ed;
-  color: #909399;
+  border-top: 1px solid var(--el-border-color-lighter);
+  color: var(--el-text-color-secondary);
   text-align: center;
 }
 

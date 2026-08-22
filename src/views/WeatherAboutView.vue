@@ -107,7 +107,7 @@ const TECH = [
 
 .lead {
   margin: 0;
-  color: #606266;
+  color: var(--el-text-color-regular);
   font-size: 15px;
 }
 
@@ -121,13 +121,13 @@ const TECH = [
 }
 
 .strong-line {
-  color: #303133;
+  color: var(--el-text-color-primary);
 }
 
 .section-title {
   margin: 26px 0 12px;
   padding-left: 8px;
-  border-left: 3px solid #409eff;
+  border-left: 3px solid var(--el-color-primary);
 }
 
 .value-grid {
@@ -147,12 +147,12 @@ const TECH = [
 
 .value-card p {
   margin: 6px 0 10px;
-  color: #606266;
+  color: var(--el-text-color-regular);
   line-height: 1.6;
 }
 
 .value-card small {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .note {

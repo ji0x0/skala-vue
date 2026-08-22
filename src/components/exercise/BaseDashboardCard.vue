@@ -9,8 +9,8 @@
 .base-dashboard-card {
   margin-bottom: 16px;
   padding: 16px;
-  border: 1px solid #dddddd;
+  border: 1px solid var(--el-border-color-light);
   border-radius: 10px;
-  background-color: #f8f9fa;
+  background-color: var(--el-fill-color-light);
 }
 </style>

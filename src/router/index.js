@@ -61,10 +61,13 @@ const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 })
 
-const BASE_TITLE = '제조현장 데일리 운영 브리핑'
+/** 홈에서 쓰는 정식 명칭 */
+const SERVICE_TITLE = '제조현장 데일리 운영 브리핑'
 
 router.afterEach((to) => {
-  document.title = to.meta.title ? `${to.meta.title} · ${BASE_TITLE}` : BASE_TITLE
+  // 홈은 서비스명을, 나머지 화면은 화면 이름만 탭에 표시한다.
+  document.title =
+    to.name === 'WeatherHome' || !to.meta.title ? SERVICE_TITLE : to.meta.title
 })
 
 export default router

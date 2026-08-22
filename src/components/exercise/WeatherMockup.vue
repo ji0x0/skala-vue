@@ -149,16 +149,16 @@ const showDetail = (weather) => {
 .weather-compare {
   margin-bottom: 16px;
   padding: 16px;
-  border: 1px solid #dddddd;
+  border: 1px solid var(--el-border-color-light);
   border-radius: 10px;
-  background-color: #f8f9fa;
+  background-color: var(--el-fill-color-light);
 }
 
 .search-box input {
   width: 100%;
   box-sizing: border-box;
   padding: 9px 10px;
-  border: 1px solid #bbbbbb;
+  border: 1px solid var(--el-border-color);
   border-radius: 4px;
 }
 
@@ -166,9 +166,9 @@ const showDetail = (weather) => {
   position: relative;
   margin-bottom: 10px;
   padding: 14px;
-  border: 1px solid #d8d8d8;
+  border: 1px solid var(--el-border-color-light);
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color);
   cursor: pointer;
 }
 
@@ -202,9 +202,9 @@ const showDetail = (weather) => {
   top: 14px;
   right: 14px;
   padding: 6px 12px;
-  border: 1px solid #bbbbbb;
+  border: 1px solid var(--el-border-color);
   border-radius: 4px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color);
   cursor: pointer;
 }
 
@@ -244,8 +244,8 @@ const showDetail = (weather) => {
 .compare-card {
   flex: 1;
   padding: 15px;
-  border: 1px solid #cccccc;
+  border: 1px solid var(--el-border-color);
   border-radius: 8px;
-  background-color: #f5f9ff;
+  background-color: var(--el-color-primary-light-9);
 }
 </style>

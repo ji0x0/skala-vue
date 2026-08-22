@@ -89,7 +89,7 @@ const headline = computed(() => {
 
 .headline {
   margin: 0 0 14px;
-  color: #303133;
+  color: var(--el-text-color-primary);
   font-weight: 600;
 }
 
@@ -100,7 +100,7 @@ const headline = computed(() => {
   margin-bottom: 16px;
   padding: 12px;
   border-radius: 8px;
-  background-color: #fdf6ec;
+  background-color: var(--el-color-warning-light-9);
 }
 
 .solar-row {
@@ -118,12 +118,12 @@ const headline = computed(() => {
 }
 
 .solar-label small {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .hint {
   display: block;
   margin-top: 10px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 </style>

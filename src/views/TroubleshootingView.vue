@@ -122,7 +122,7 @@ const categoryCounts = computed(() =>
 }
 
 .view-head small {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .count-row {
@@ -154,12 +154,25 @@ const categoryCounts = computed(() =>
   text-align: left;
 }
 
+/* 펼친 내용이 제목선에 붙지 않도록 안쪽 여백(padding)을 준다. */
 .item-body {
-  padding: 4px 2px;
+  margin-bottom: 4px;
+  padding: 18px 20px;
+  border-radius: 8px;
+  background-color: var(--el-fill-color-lighter);
+}
+
+/* 제목 줄에도 좌우 여백을 맞춰 준다. */
+.trouble-collapse :deep(.el-collapse-item__header) {
+  padding: 0 4px;
+}
+
+.trouble-collapse :deep(.el-collapse-item__content) {
+  padding-bottom: 12px;
 }
 
 .block {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .block:last-child {
@@ -169,7 +182,7 @@ const categoryCounts = computed(() =>
 .block strong {
   display: block;
   margin-bottom: 4px;
-  color: #409eff;
+  color: var(--el-color-primary);
   font-size: 13px;
 }
 
@@ -188,7 +201,7 @@ pre {
   margin: 8px 0 0;
   padding: 10px 12px;
   border-radius: 6px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-light);
   overflow-x: auto;
   font-size: 12px;
 }

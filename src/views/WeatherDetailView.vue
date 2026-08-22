@@ -250,7 +250,7 @@ onMounted(async () => {
 
 .current-head p {
   margin: 2px 0 0;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .stat-row {
@@ -287,13 +287,13 @@ onMounted(async () => {
 }
 
 .forecast-list small {
-  color: #606266;
+  color: var(--el-text-color-regular);
 }
 
 .hint {
   display: block;
   margin-top: 10px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .actions {

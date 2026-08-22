@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import UnitToggler from '@/components/exercise/UnitToggler.vue'
+import SettingsPanel from '@/components/exercise/SettingsPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -52,9 +52,14 @@ const handleSelect = (index) => {
       <el-menu-item v-for="menu in MENUS" :key="menu.index" :index="menu.index">
         {{ menu.icon }} {{ menu.label }}
       </el-menu-item>
-    </el-menu>
 
-    <UnitToggler />
+      <!-- 메뉴 오른쪽 끝을 채워 설정 버튼을 끝으로 밀어낸다. -->
+      <div class="nav-spacer" />
+
+      <div class="nav-settings">
+        <SettingsPanel />
+      </div>
+    </el-menu>
   </header>
 </template>
 
@@ -66,8 +71,8 @@ const handleSelect = (index) => {
   gap: 12px 20px;
   flex-wrap: wrap;
   margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e4e7ed;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 .brand {
@@ -89,23 +94,43 @@ const handleSelect = (index) => {
 
 .brand-text strong {
   font-size: 16px;
-  color: #303133;
+  color: var(--el-text-color-primary);
 }
 
 .brand-text small {
-  color: #909399;
+  color: var(--el-text-color-secondary);
   font-size: 11px;
   letter-spacing: 0.04em;
 }
 
 .nav-menu {
   flex: 1 1 380px;
+  /* 페이지 배경과 같은 색을 써서 메뉴 영역이 따로 떠 보이지 않게 한다. */
+  --el-menu-bg-color: transparent;
+  --el-menu-hover-bg-color: var(--el-fill-color);
+  /* 가로 메뉴는 이 변수가 높이를 결정한다. 기본 60px에서 줄였다. */
+  --el-menu-horizontal-height: 48px;
+  background-color: transparent;
   border-bottom: 0;
 }
 
 .nav-menu :deep(.el-menu-item) {
+  height: 48px;
   padding: 0 14px;
   font-size: 13px;
+  line-height: 48px;
+}
+
+/* 메뉴 안에 넣은 요소들이 항목처럼 보이지 않도록 정리한다. */
+.nav-spacer {
+  flex: 1;
+}
+
+.nav-settings {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding-left: 12px;
 }
 
 @media (max-width: 900px) {

@@ -27,9 +27,9 @@ const convertedTemp = computed(() => {
 const storeStates = computed(() => [
   {
     name: 'configStore',
-    role: '단위 설정 (과제 5 기본 요구사항)',
-    state: `unit: '${configStore.unit}'`,
-    getter: `unitSymbol: '${configStore.unitSymbol}'`,
+    role: '단위·테마 설정 (과제 5 기본 요구사항)',
+    state: `unit: '${configStore.unit}' / theme: '${configStore.theme}'`,
+    getter: `unitSymbol: '${configStore.unitSymbol}' / isDark: ${configStore.isDark}`,
     loaded: true,
   },
   {
@@ -75,7 +75,7 @@ const loadAll = () => {
     <el-alert type="info" :closable="false" class="intro">
       Store는 컴포넌트 밖에 있는 전역 상태입니다. 아래 값은 이 화면이 직접 가진 데이터가 아니라
       브리핑 화면과 <strong>같은 Store 인스턴스</strong>를 그대로 읽은 것입니다.
-      상단 내비게이션의 단위 변경 버튼을 눌러도 아래 값이 함께 바뀝니다.
+      상단 내비게이션의 설정 변경 버튼을 눌러도 아래 값이 함께 바뀝니다.
     </el-alert>
 
     <h4>단위 설정 Store 동작 확인</h4>
@@ -138,7 +138,7 @@ const loadAll = () => {
 h4 {
   margin: 20px 0 8px;
   padding-left: 8px;
-  border-left: 3px solid #409eff;
+  border-left: 3px solid var(--el-color-primary);
   font-size: 14px;
 }
 
@@ -153,7 +153,7 @@ h4:first-of-type {
   flex-wrap: wrap;
   padding: 14px;
   border-radius: 8px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-light);
 }
 
 .unit-line {
@@ -169,24 +169,24 @@ h4:first-of-type {
 }
 
 .unit-result small {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .unit-result strong {
   font-size: 20px;
-  color: #409eff;
+  color: var(--el-color-primary);
 }
 
 .note {
   margin: 10px 0 0;
-  color: #606266;
+  color: var(--el-text-color-regular);
   line-height: 1.7;
 }
 
 code {
   padding: 1px 5px;
   border-radius: 4px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-light);
   font-size: 12px;
 }
 
@@ -199,6 +199,6 @@ code {
 }
 
 .actions small {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 </style>

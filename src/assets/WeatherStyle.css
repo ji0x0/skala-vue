@@ -20,22 +20,22 @@
   gap: 12px;
   margin-bottom: 20px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #dddddd;
+  border-bottom: 1px solid var(--el-border-color-light);
 }
 
 .nav-item {
-  color: #495057;
+  color: var(--el-text-color-regular);
   font-weight: 700;
   text-decoration: none;
 }
 
 .nav-item.router-link-exact-active {
-  color: #1685d1;
-  border-bottom: 2px solid #1685d1;
+  color: var(--el-color-primary);
+  border-bottom: 2px solid var(--el-color-primary);
 }
 
 .divider {
-  color: #adb5bd;
+  color: var(--el-text-color-placeholder);
 }
 
 .dashboard-wrapper {
@@ -43,7 +43,7 @@
   margin: 30px auto;
   padding: 24px;
   border-radius: 12px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color);
   box-shadow: 0 4px 16px rgb(0 0 0 / 8%);
 }
 
@@ -54,21 +54,21 @@
 /* ===== 공통 상태 표시 ===== */
 .api-message {
   padding: 16px;
-  color: #3498db;
+  color: var(--el-color-primary);
   font-weight: 700;
   text-align: center;
 }
 
 .api-message.error {
-  color: #d63031;
+  color: var(--el-color-danger);
 }
 
 .status-bar {
   padding: 12px;
   border-radius: 6px;
-  color: #218838;
+  color: var(--el-color-success);
   text-align: center;
-  background-color: #e2f5e6;
+  background-color: var(--el-color-success-light-9);
 }
 
 .status-bar p {

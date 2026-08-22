@@ -46,9 +46,9 @@ const displayTemp = computed(() => {
   position: relative;
   margin-bottom: 10px;
   padding: 14px;
-  border: 1px solid #d8d8d8;
+  border: 1px solid var(--el-border-color-light);
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color);
   cursor: pointer;
 }
 

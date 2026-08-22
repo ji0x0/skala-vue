@@ -116,10 +116,17 @@ onMounted(refreshAll)
 
 .briefing-head h2 {
   margin: 0 0 2px;
+  /* 라이트 모드에서는 검정에 가깝게, 다크 모드에서는 밝은 글자색을 쓴다. */
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+html.dark .briefing-head h2 {
+  color: var(--el-text-color-primary);
 }
 
 .briefing-head small {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .briefing-alert {
@@ -129,7 +136,12 @@ onMounted(refreshAll)
 .briefing-list {
   margin: 0;
   padding-left: 18px;
+  color: #1a1a1a;
   line-height: 1.7;
+}
+
+html.dark .briefing-list {
+  color: var(--el-text-color-primary);
 }
 
 .briefing-grid {

@@ -189,7 +189,7 @@ onMounted(() => {
 
 .comment {
   margin: 0;
-  color: #606266;
+  color: var(--el-text-color-regular);
 }
 
 .bar-chart {
@@ -214,7 +214,7 @@ onMounted(() => {
   width: 100%;
   height: 140px;
   border-radius: 4px;
-  background-color: #f5f7fa;
+  background-color: var(--el-fill-color-light);
 }
 
 .bar-fill {
@@ -224,17 +224,17 @@ onMounted(() => {
 }
 
 .bar-fill.forecast {
-  background: linear-gradient(180deg, #ffd666, #e6a23c);
+  background: linear-gradient(180deg, #ffd666, var(--el-color-warning));
 }
 
 .bar-fill.actual {
-  background: linear-gradient(180deg, #79bbff, #409eff);
+  background: linear-gradient(180deg, #79bbff, var(--el-color-primary));
 }
 
 .bar-value,
 .bar-label {
   margin-top: 3px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
   font-size: 10px;
   white-space: nowrap;
 }
@@ -242,7 +242,7 @@ onMounted(() => {
 .hint {
   display: block;
   margin-top: 10px;
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .actions {

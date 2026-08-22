@@ -77,7 +77,7 @@ const hasLiveDemo = (lab) => Boolean(lab.liveComponent)
 }
 
 .view-head small {
-  color: #909399;
+  color: var(--el-text-color-secondary);
 }
 
 .lab-timeline {
@@ -98,7 +98,7 @@ const hasLiveDemo = (lab) => Boolean(lab.liveComponent)
 
 .lab-summary {
   margin: 0 0 10px;
-  color: #606266;
+  color: var(--el-text-color-regular);
   line-height: 1.6;
 }
 

@@ -28,7 +28,7 @@ defineEmits(['update-query'])
   width: 100%;
   box-sizing: border-box;
   padding: 9px 10px;
-  border: 1px solid #bbbbbb;
+  border: 1px solid var(--el-border-color);
   border-radius: 4px;
 }
 

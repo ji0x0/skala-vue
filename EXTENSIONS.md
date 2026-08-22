@@ -4,7 +4,7 @@
 
 ## 프로젝트 구성
 
-- 배포 주소: https://skala-vue-eight-delta.vercel.app
+- 배포 주소: https://skala-vue-factory-daily-briefing.vercel.app
 - 저장소: https://github.com/ji0x0/skala-vue
 - 날씨 애플리케이션: `/Users/jiyeong/workspace/skala-vue`
 - 문법 실습 프로젝트: `/Users/jiyeong/workspace/skala-vue-practices`
@@ -133,7 +133,13 @@
 | `fuelStore` | 전국·지역 유가, 최근 추이 | `dieselPrice`, `trendChangeRate`, `costComment`, `regionalDiesel` | `fetchFuelPrices` |
 | `exchangeStore` | 주요 통화 환율, 원/달러 추이 | `majorRates`, `changeRate`, `costComment`, `historyRange` | `fetchRates` |
 
-기존 `configStore`(단위 설정)까지 합쳐 Store는 총 5개다.
+기존 `configStore`까지 합쳐 Store는 총 5개다. `configStore`에는 화면 테마(라이트/다크) state와 action을 추가했고, 단위와 테마 모두 `localStorage`에 저장해 다시 방문해도 유지된다.
+
+**설정 패널**
+
+내비게이션의 "단위 변경" 버튼을 "설정 변경" 패널로 바꿨다. `el-popover` 안에 `el-switch` 두 개를 두어 화면 테마와 온도 단위를 한곳에서 조정한다.
+
+다크 모드는 Element Plus의 `theme-chalk/dark/css-vars.css`를 불러오고 `html`에 `dark` 클래스를 토글하는 방식이다. 직접 작성한 스타일에 하드코딩되어 있던 색상 118곳을 Element Plus의 CSS 변수(`--el-bg-color`, `--el-text-color-primary`, `--el-border-color` 등)로 바꿔 테마에 따라 함께 바뀌도록 했다. 다만 배지처럼 고정 강조색 배경 위의 글자는 흰색으로 유지했다.
 
 **API 확장 (과제 6 요구사항 2·3)**
 
@@ -290,7 +296,7 @@ GitHub에 push할 때마다 Vercel이 자동으로 재배포한다. 배포한 �
 
 2026년 8월 22일 Vercel에 프로덕션 배포를 완료했다.
 
-- 주소: https://skala-vue-eight-delta.vercel.app
+- 주소: https://skala-vue-factory-daily-briefing.vercel.app
 - 환경변수 3종을 Production / Preview / Development 세 환경에 등록했다. Production과 Preview는 Vercel이 Sensitive로 처리해 대시보드에서도 값이 보이지 않는다.
 - 서버리스 함수 3개(`api/openweather`, `api/kpx`, `api/opinet`)가 정상 빌드되어 동작한다.
 

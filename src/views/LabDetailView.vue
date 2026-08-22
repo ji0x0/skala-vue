@@ -174,9 +174,9 @@ const nextLab = computed(() => (lab.value ? findLabByStep(lab.value.step + 1) : 
 
 .live-frame {
   padding: 4px 12px 12px;
-  border: 1px dashed #dcdfe6;
+  border: 1px dashed var(--el-border-color-light);
   border-radius: 8px;
-  background-color: #fafafa;
+  background-color: var(--el-fill-color-lighter);
 }
 
 .nav-actions {
