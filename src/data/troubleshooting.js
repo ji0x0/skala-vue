@@ -17,6 +17,19 @@ export const TROUBLES = [
     code: "import WeatherCard from '@/components/exercise/WeatherCard.vue'",
   },
   {
+    id: 'hangul-input',
+    category: '컴포넌트',
+    step: 1,
+    title: '한글을 입력할 때 검색어가 깨지는 문제',
+    symptom: '한글을 타이핑하면 조합 중인 글자가 사라지거나 자음과 모음이 따로 떨어졌다.',
+    cause: [
+      'v-model은 입력값을 곧바로 되돌려 쓰기 때문에 한글 조합 중에 값이 덮어써질 수 있다.',
+    ],
+    solution:
+      ':value로 값을 내려주고 @input으로 변경만 부모에 알리는 단방향 흐름으로 바꿨다. 값은 부모가 보관하므로 조합 중에도 입력이 끊기지 않는다. 이 방식을 SearchBar 컴포넌트로 묶어 운영 브리핑의 사업장 검색과 트러블슈팅 검색에서 함께 쓴다.',
+    code: '<input :value="currentQuery" @input="$emit(\'update-query\', $event.target.value)" />',
+  },
+  {
     id: 'emit-name',
     category: '컴포넌트',
     step: 3,

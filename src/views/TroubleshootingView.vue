@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import SearchBar from '@/components/exercise/SearchBar.vue'
 import { TROUBLES, TROUBLE_CATEGORIES } from '@/data/troubleshooting.js'
 
 const router = useRouter()
@@ -58,12 +59,13 @@ const categoryCounts = computed(() =>
         </el-radio-button>
       </el-radio-group>
 
-      <el-input
-        v-model="keyword"
-        size="small"
+      <!-- 검색어는 v-model 없이 :value와 @input으로 다룬다. (실습 1 요구사항) -->
+      <SearchBar
         class="search-input"
+        :current-query="keyword"
         placeholder="증상이나 해결 방법 검색"
-        clearable
+        echo-label=""
+        @update-query="(value) => (keyword = value)"
       />
     </div>
 
@@ -142,7 +144,9 @@ const categoryCounts = computed(() =>
 }
 
 .search-input {
-  max-width: 260px;
+  flex: 1;
+  min-width: 200px;
+  max-width: 280px;
 }
 
 .item-title {

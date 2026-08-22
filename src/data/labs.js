@@ -17,6 +17,7 @@ export const LABS = [
     customization: [
       '도시를 6개로 늘리고 습도·풍속 필드를 추가했다.',
       'v-model 드롭다운 두 개로 지역별 날씨를 나란히 비교하는 섹션을 추가했다.',
+      '여기서 익힌 :value·@input 검색과 @click.stop 버블링 차단, 상태바 패턴을 운영 브리핑 화면과 트러블슈팅 화면에 그대로 적용했다.',
     ],
     liveComponent: 'WeatherMockup',
   },
@@ -53,6 +54,7 @@ export const LABS = [
     customization: [
       '전역 CSS에 몰려 있던 카드·검색창 스타일을 각 컴포넌트의 scoped 스타일로 옮겼다.',
       '전역 스타일시트는 앱 셸과 공통 상태 표시 규칙만 남겼다.',
+      'SearchBar에 placeholder와 echoLabel props를 더해 운영 브리핑의 사업장 검색과 트러블슈팅 검색에서 함께 쓰도록 했다.',
     ],
     liveComponent: 'WeatherParent',
   },
