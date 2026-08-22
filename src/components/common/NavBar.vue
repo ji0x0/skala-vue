@@ -35,7 +35,7 @@ const handleSelect = (index) => {
 <template>
   <header class="nav-bar">
     <div class="brand" @click="handleSelect('/')">
-      <span class="brand-mark">🏭</span>
+      <span class="brand-mark">📝</span>
       <div class="brand-text">
         <strong>제조현장 데일리 운영 브리핑</strong>
         <small>Factory Daily Briefing</small>

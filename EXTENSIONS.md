@@ -4,6 +4,8 @@
 
 ## 프로젝트 구성
 
+- 배포 주소: https://skala-vue-eight-delta.vercel.app
+- 저장소: https://github.com/ji0x0/skala-vue
 - 날씨 애플리케이션: `/Users/jiyeong/workspace/skala-vue`
 - 문법 실습 프로젝트: `/Users/jiyeong/workspace/skala-vue-practices`
 - 원본 백업: `/Users/jiyeong/workspace/skala-vue-backup`
@@ -172,92 +174,143 @@
 
 ## API 키 관리와 Vercel 배포
 
-### 먼저 알아야 할 것: .gitignore와 브라우저 노출은 다른 문제다
+### 왜 서버리스 함수로 옮겼나
 
-`.env`를 `.gitignore`에 넣으면 **GitHub 저장소**에는 키가 올라가지 않는다. 하지만 그것만으로 키가 감춰지지는 않는다.
+처음에는 API 키를 `VITE_OPENWEATHER_API_KEY` 처럼 `VITE_` 접두사를 붙여 `.env`에 두고, `.gitignore`로 저장소 노출만 막았다. 하지만 이것만으로는 부족하다.
 
-`VITE_` 접두사가 붙은 환경변수는 빌드 시점에 **클라이언트 번들 안에 문자열로 그대로 삽입**된다. 즉 배포된 사이트에서 개발자 도구를 열면 누구나 키를 볼 수 있다. 직접 확인할 수 있다.
+`VITE_` 접두사가 붙은 변수는 빌드 시점에 **클라이언트 번들 안에 문자열로 삽입**된다. 저장소에는 없지만 배포된 JS 파일 안에는 그대로 들어 있어서, 개발자 도구를 열면 누구나 볼 수 있었다.
+
+```bash
+# 옮기기 전
+grep -ro "F260821054" dist/assets/
+# dist/assets/WeatherHomeView-DhvX-bnA.js:F260821054   ← 키가 그대로 보인다
+```
+
+원인은 단순하다. 브라우저가 외부 API를 **직접** 호출하기 때문이다. 요청을 보내려면 키가 브라우저 안에 있어야 하고, 브라우저 안에 있으면 볼 수 있다. 난독화나 인코딩은 의미가 없다. Network 탭에 요청 URL이 그대로 찍힌다.
+
+### 구조를 이렇게 바꿨다
+
+```text
+[이전] 브라우저 ──(키 포함)──> OpenWeather                    키 노출
+[현재] 브라우저 ──(키 없음)──> /api/* ──(키 추가)──> OpenWeather   키는 서버에만
+```
+
+`api/` 폴더의 파일은 Vercel이 자동으로 서버리스 함수로 띄운다. 브라우저는 `/api/openweather?path=weather&q=Seoul,KR` 처럼 키가 없는 주소만 호출하고, 키는 함수 안에서 붙인다.
+
+| 함수 | 담당 API | 해결한 문제 |
+| --- | --- | --- |
+| `api/openweather.js` | 현재 날씨, 단기 예보 | 키 노출 |
+| `api/kpx.js` | 전력거래소 태양광 실측 | 키 노출 |
+| `api/opinet.js` | 전국·지역 유가 | 키 노출 + CORS 차단 |
+
+키가 필요 없는 Open-Meteo(일사량·대기질)와 Frankfurter(환율)는 브라우저에서 그대로 호출한다. 서버를 거칠 이유가 없다.
+
+함수는 호출 가능한 경로를 화이트리스트로 제한했다. 그렇게 하지 않으면 아무 주소나 대신 호출해 주는 열린 프록시가 된다.
+
+### 가장 중요한 규칙: VITE_ 접두사를 뗀다
+
+| 변수명 | 어디까지 노출 |
+| --- | --- |
+| `VITE_OPENWEATHER_API_KEY` | 클라이언트 번들에 삽입 → **보임** |
+| `OPENWEATHER_API_KEY` | 서버 함수만 접근 → **안 보임** |
+
+함수를 만들어도 접두사가 붙어 있으면 여전히 번들에 박힌다. `.env`와 Vercel 환경변수 양쪽 모두 접두사 없는 이름을 써야 한다.
+
+### 정적 호스팅은 그대로다
+
+`api/` 폴더를 추가해도 Vue 앱은 여전히 정적 파일(`dist/`)로 배포된다. 서버리스 함수는 같은 도메인에 엔드포인트 몇 개를 얹는 것뿐이고, Vercel 무료 플랜에 포함된다. 과제의 "정적 웹 호스팅" 요건은 그대로 충족한다.
+
+다만 GitHub Pages는 서버 코드를 실행할 수 없어 이 방식을 쓸 수 없다. Netlify는 Netlify Functions로 같은 구조를 만들 수 있지만 코드 형식이 조금 다르다.
+
+### 로컬 개발은 npm run dev 그대로
+
+Vite 개발 서버는 서버리스 함수를 실행하지 않아서, 그냥 두면 `/api/*`가 404가 된다. `vite.config.js`에 플러그인을 추가해 **같은 파일을 미들웨어로 실행**하도록 했다.
+
+```js
+const env = loadEnv(mode, process.cwd(), '')  // 세 번째 인자가 빈 문자열이면 VITE_ 없는 변수도 읽는다
+Object.assign(process.env, env)
+```
+
+읽은 값은 `process.env`에만 넣으므로 클라이언트 번들에는 포함되지 않는다. 함수 코드가 한 벌이라 로컬과 배포가 갈라지지 않고, `vercel dev` 같은 별도 도구 없이 개발할 수 있다.
+
+### 확인 방법
+
+빌드 후 실제 키 값을 검색해 0건이면 성공이다.
 
 ```bash
 npm run build
-grep -ro "본인_키_앞_8자리" dist/assets/ | head
+grep -r "본인_키_값" dist/assets/
 ```
 
-정리하면 두 가지는 서로 다른 목적이다.
-
-| 조치 | 막아 주는 것 | 막지 못하는 것 |
-| --- | --- | --- |
-| `.gitignore`에 `.env` 등록 | GitHub 저장소에 키가 남는 것 | 배포 사이트에서 키가 보이는 것 |
-| Vercel 환경변수 등록 | 저장소·소스코드에 키가 남는 것 | 배포 사이트에서 키가 보이는 것 |
-| 서버리스 함수 프록시 | 위 두 가지 모두 | — (과제 범위 밖) |
-
-프론트엔드 실습 과제에서는 앞의 두 가지까지 하는 것이 표준이다. 다만 "왜 이것만으로는 부족한지"를 알고 있어야 한다.
+앱 화면에서도 확인할 수 있다. `/labs/8` 데모가 클라이언트에서 세 키에 접근을 시도해 결과를 표시하고, 클라이언트 번들이 실제로 가진 환경변수 전체(`BASE_URL`, `DEV`, `MODE`, `PROD`, `SSR`)를 나열한다. API 키 이름은 하나도 없다.
 
 ### Vercel 배포 절차
 
 **1단계 — 저장소 연결**
 
-Vercel에 로그인한 뒤 `Add New... > Project`에서 GitHub 저장소 `skala-vue`를 Import한다. Vite 프로젝트는 자동 인식되며 아래 설정이 기본값으로 잡힌다.
+`Add New... > Project`에서 GitHub 저장소를 Import한다. Vite 프로젝트로 자동 인식되며 Build Command는 `npm run build`, Output Directory는 `dist`이다. `api/` 폴더는 별도 설정 없이 함수로 인식된다.
 
-| 항목 | 값 |
-| --- | --- |
-| Framework Preset | Vite |
-| Build Command | `npm run build` |
-| Output Directory | `dist` |
-| Install Command | `npm install` |
+**2단계 — 환경변수 등록**
 
-**2단계 — 환경변수 등록 (가장 중요)**
-
-`Settings > Environment Variables`에서 아래 세 개를 등록한다. `.env` 파일은 Git에 올라가지 않으므로, 등록하지 않으면 배포본에서 API 호출이 전부 실패한다.
+`Settings > Environment Variables`에서 아래 세 개를 등록한다. **`VITE_` 접두사를 붙이지 않는다.**
 
 | Key | 비고 |
 | --- | --- |
-| `VITE_OPENWEATHER_API_KEY` | OpenWeather 발급 키 |
-| `VITE_DATA_GO_KR_API_KEY` | 공공데이터포털 인증키를 **URL 디코딩한** 값 |
-| `VITE_OPINET_API_KEY` | 오피넷 발급 키 |
+| `OPENWEATHER_API_KEY` | OpenWeather 발급 키 |
+| `DATA_GO_KR_API_KEY` | 공공데이터포털 인증키를 **URL 디코딩한** 값 |
+| `OPINET_API_KEY` | 오피넷 발급 키 |
 
 주의할 점.
 
-- Environment는 `Production`, `Preview`, `Development` 세 곳에 모두 체크한다. 하나라도 빠지면 해당 환경에서만 조용히 실패한다.
-- 값 앞뒤에 따옴표를 붙이지 않는다. 따옴표까지 값으로 들어간다.
-- 공공데이터포털 키는 포털이 안내하는 인코딩된 키(`%2F`, `%3D` 포함)가 아니라 **디코딩된 원본**을 넣어야 한다. 인코딩된 값을 넣으면 Axios가 다시 인코딩해 `SERVICE_KEY_IS_NOT_REGISTERED_ERROR`가 발생한다.
-- 환경변수를 추가하거나 수정한 뒤에는 **반드시 재배포**해야 반영된다. `VITE_` 변수는 빌드 시점에 번들에 박히기 때문에, 값만 바꾸고 재배포하지 않으면 이전 값이 그대로 서비스된다. `Deployments` 탭에서 최신 배포의 `Redeploy`를 누른다.
+- Environment는 `Production`, `Preview`, `Development` 세 곳에 모두 체크한다.
+- 값 앞뒤에 따옴표를 붙이지 않는다.
+- 공공데이터포털 키는 인코딩된 값(`%2F`, `%3D` 포함)이 아니라 디코딩된 원본을 넣는다.
+- 환경변수를 추가·수정한 뒤에는 재배포해야 반영된다. `Deployments` 탭에서 `Redeploy`를 누른다.
 
 **3단계 — 배포 후 확인**
 
 - `/`, `/about`, `/labs`, `/troubleshooting` 이동
-- `/weather/city_01`, `/solar/ulsan` **주소창에 직접 입력해서** 접속 (`vercel.json` rewrite 동작 확인)
-- 존재하지 않는 주소로 접속해 404 화면 확인
-- 유가 카드가 표시되는지 확인 (오피넷 프록시 rewrite 동작 확인)
-- 시크릿 창으로 GitHub 저장소에 접속해 로그인 없이 소스가 보이는지 확인
+- `/weather/city_01`, `/solar/ulsan` 을 **주소창에 직접 입력**해서 접속 (rewrite 동작 확인)
+- 존재하지 않는 주소로 404 화면 확인
+- `/labs/8` 에서 세 키가 모두 "읽을 수 없음"인지 확인
+- 개발자 도구 Network 탭에서 요청 주소에 키가 없는지 확인
+- 시크릿 창으로 GitHub 저장소가 로그인 없이 보이는지 확인
 
-### 키 보호를 위한 추가 조치
+**배포 후 수정**
 
-배포 사이트에서 키가 보이는 것을 전제로, 피해 범위를 줄이는 조치를 함께 한다.
+GitHub에 push할 때마다 Vercel이 자동으로 재배포한다. 배포한 뒤에 내용을 고쳐도 push만 하면 반영되므로, 먼저 배포하고 다듬어 나가도 된다. 환경변수는 이름이 바뀔 때만 다시 등록하면 된다.
 
-- **OpenWeather**: 무료 플랜은 분당 60회 제한이 있다. 키가 유출되어 한도를 초과하면 서비스가 멈추므로, 과제 제출 후 키를 폐기하고 재발급하는 것이 안전하다.
-- **공공데이터포털**: 개발계정은 일일 트래픽 제한(기본 1,000건)이 있다. 마이페이지에서 사용량을 주기적으로 확인한다.
-- **오피넷**: 무료 키는 일일 호출 제한이 있다. 대시보드 진입마다 3회를 호출하므로 Store에 중복 호출 방지 가드를 넣어 두었다.
+### 그래도 남는 것
 
-### 완전히 숨기려면 (과제 범위 밖)
+키가 서버로 옮겨졌어도, 누구나 `/api/*`를 호출할 수 있다는 점은 남는다. 실제 서비스라면 호출 횟수 제한이나 요청 출처 검증을 함수 안에 추가한다. 과제 범위에서는 다루지 않았다.
 
-클라이언트가 외부 API를 직접 부르지 않는 구조로 바꿔야 한다. Vercel 기준으로는 프로젝트 최상위에 `api/` 폴더를 만들고 서버리스 함수를 두는 방식이다.
+과제 제출과 평가가 끝나면 세 개 키를 폐기하고 재발급하는 것이 안전하다.
 
-```text
-api/
-└── weather.js        # process.env.OPENWEATHER_API_KEY 로 키를 읽어 외부 API 호출
-```
+## 배포 결과
 
-이때 환경변수 이름에서 `VITE_` 접두사를 **떼야** 한다. `VITE_`가 붙으면 클라이언트 번들에 노출되기 때문이다. 브라우저는 `/api/weather`만 호출하고 키는 서버에만 남는다. 이 구조로 가면 오피넷 rewrite도 함수 안에서 처리할 수 있어 `vercel.json` 프록시가 필요 없어진다.
+2026년 8월 22일 Vercel에 프로덕션 배포를 완료했다.
+
+- 주소: https://skala-vue-eight-delta.vercel.app
+- 환경변수 3종을 Production / Preview / Development 세 환경에 등록했다. Production과 Preview는 Vercel이 Sensitive로 처리해 대시보드에서도 값이 보이지 않는다.
+- 서버리스 함수 3개(`api/openweather`, `api/kpx`, `api/opinet`)가 정상 빌드되어 동작한다.
+
+배포본에서 확인한 내용은 다음과 같다.
+
+| 항목 | 결과 |
+| --- | --- |
+| 로그인 없이 접속 | 정상 |
+| 서버리스 함수 3종 | 키 없는 주소로 호출해 정상 응답 |
+| 대시보드 4개 카드 | 오류 없이 실데이터 표시 |
+| 주소 직접 입력 접속 | `/weather/city_01`, `/solar/ulsan`, `/labs/8` 등 전부 정상 |
+| 진입 번들의 API 키 | 검색 결과 0건 |
+| `/labs/8` 키 접근 시도 | 세 키 모두 "읽을 수 없음" |
 
 ## 앞으로 진행할 작업
 
-### Vercel 배포
+### 배포 관련
 
-- GitHub 저장소를 Vercel에 연결하고 실제 배포 주소를 발급받는다.
-- 위의 환경변수 3종을 등록하고 재배포한다.
-- 모든 라우트와 상세 페이지 직접 접속을 확인한다.
-- 배포 주소를 README.md에 기록한다.
+- 현재는 Vercel CLI로 배포한 상태라 GitHub 저장소와 연결되어 있지 않다. push해도 자동 재배포되지 않으므로, 대시보드에서 Git 연동을 하거나 `vercel deploy --prod` 를 실행해야 한다.
+- 배포 환경에서는 Vercel이 `VITE_VERCEL_*` 시스템 변수를 자동 주입한다. API 키와는 무관하지만 `/labs/8` 화면의 환경변수 목록이 길어져, 시스템 변수임을 표시하거나 걸러 낼 수 있다.
 
 ### 제출 전 정리
 

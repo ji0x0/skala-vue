@@ -1,7 +1,11 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { SITES, findSiteByRegion } from '@/data/sites.js'
-import { fetchNationalPvActual, fetchSolarForecast } from '@/services/solarApi.js'
+import {
+  fetchNationalPvActual,
+  fetchSolarForecast,
+  fetchSolarForecastBulk,
+} from '@/services/solarApi.js'
 
 /** 태양광 시스템 성능비(Performance Ratio). 각종 손실을 반영한 통용 계수. */
 const PERFORMANCE_RATIO = 0.8
@@ -103,11 +107,11 @@ export const useSolarStore = defineStore('solar', () => {
     loadError.value = ''
 
     try {
-      const responses = await Promise.all(
-        SITES.map((site) => fetchSolarForecast(site.lat, site.lon)),
-      )
+      // 사업장마다 따로 부르지 않고 한 번의 요청으로 전부 받아 온다.
+      const response = await fetchSolarForecastBulk(SITES)
+      const results = Array.isArray(response.data) ? response.data : [response.data]
 
-      solarList.value = responses.map((response, index) => toSolarItem(SITES[index], response.data))
+      solarList.value = results.map((data, index) => toSolarItem(SITES[index], data))
     } catch (error) {
       console.error('태양광 예측 Store 로딩 실패:', error)
       loadError.value = '태양광 일사량 데이터를 불러오지 못했습니다.'

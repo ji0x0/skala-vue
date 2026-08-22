@@ -21,6 +21,17 @@ export default defineConfig([
     },
   },
 
+  {
+    // 서버리스 함수와 빌드 설정은 브라우저가 아닌 Node 환경에서 실행된다.
+    name: 'app/node-files',
+    files: ['api/**/*.js', 'vite.config.js', 'eslint.config.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],
 

@@ -46,3 +46,9 @@ __screenshots__/
 
 # 임시 작업 폴더
 tmp/
+# Vercel CLI
+.vercel
+.env*
+
+# 필요한 키 이름을 안내하는 예시 파일은 저장소에 포함한다.
+!.env.example

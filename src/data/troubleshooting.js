@@ -135,8 +135,8 @@ export const TROUBLES = [
       '공공데이터포털(data.go.kr)은 Origin을 반사해 주기 때문에 직접 호출이 가능하다.',
     ],
     solution:
-      '개발 서버는 vite.config.js의 server.proxy로, 배포 환경은 vercel.json의 rewrite로 /api/opinet 요청을 오피넷으로 전달했다. rewrite는 위에서부터 평가되므로 SPA catch-all보다 앞에 두어야 한다.',
-    code: '{ "source": "/api/opinet/:path*", "destination": "https://www.opinet.co.kr/api/:path*" }',
+      '처음에는 vite proxy와 vercel rewrite로 우회했지만, 오피넷은 키도 필요해 결국 api/opinet.js 서버리스 함수로 옮겼다. 서버끼리의 통신에는 CORS가 적용되지 않아 문제가 함께 해결됐고 키도 감춰졌다.',
+    code: "const r = await fetch(`https://www.opinet.co.kr/api/${endpoint}.do?${params}`)",
   },
   {
     id: 'datago-key-encoding',
@@ -148,8 +148,9 @@ export const TROUBLES = [
       '포털이 안내하는 일반 인증키는 이미 URL 인코딩된 문자열이다.',
       'axios params에 그대로 넣으면 %2F가 %252F로 다시 인코딩된다.',
     ],
-    solution: '.env에는 URL 디코딩된 키를 저장하고 axios params가 한 번만 인코딩하도록 했다.',
-    code: 'params: { serviceKey: import.meta.env.VITE_DATA_GO_KR_API_KEY }',
+    solution:
+      '.env에는 URL 디코딩된 키를 저장하고 URLSearchParams가 한 번만 인코딩하도록 했다. 현재는 서버리스 함수에서만 키를 사용한다.',
+    code: "new URLSearchParams({ serviceKey: process.env.DATA_GO_KR_API_KEY })",
   },
   {
     id: 'openmeteo-unit',
@@ -182,8 +183,33 @@ export const TROUBLES = [
       '.gitignore는 저장소 노출만 막을 뿐 브라우저 노출은 막지 못한다.',
     ],
     solution:
-      'Vercel 프로젝트 설정의 Environment Variables에 키를 등록해 저장소에는 남기지 않고, 키에는 도메인/사용량 제한을 건다. 완전히 숨기려면 서버리스 함수를 두고 키를 서버에만 보관해야 한다.',
-    code: null,
+      '키가 필요한 API를 api/ 서버리스 함수 뒤로 옮기고 환경변수 이름에서 VITE_ 접두사를 뗐다. 브라우저는 /api/* 만 호출하므로 Network 탭에도 키가 나타나지 않는다. 빌드 후 dist에서 키를 검색해 0건인지 확인한다.',
+    code: 'grep -r "본인_키" dist/assets/   # 결과가 없어야 정상',
+  },
+  {
+    id: 'serverless-dev',
+    category: '배포',
+    step: 8,
+    title: '서버리스 함수를 개발 서버에서도 실행하기',
+    symptom: 'api/ 폴더의 함수는 Vercel에서만 동작하고 npm run dev 에서는 404가 난다.',
+    cause: ['Vite 개발 서버는 정적 파일과 모듈만 다루고 서버 함수를 실행하지 않는다.'],
+    solution:
+      'vite.config.js에 플러그인을 추가해 /api/* 요청이 오면 같은 파일을 ssrLoadModule로 불러 미들웨어로 실행한다. 코드가 한 벌이라 로컬과 배포가 갈라지지 않고, vercel dev 없이 npm run dev만으로 개발할 수 있다. loadEnv의 접두사를 빈 문자열로 주면 VITE_ 없는 변수도 읽어 process.env에 넣을 수 있다.',
+    code: "const env = loadEnv(mode, process.cwd(), '')",
+  },
+  {
+    id: 'openmeteo-429',
+    category: 'API',
+    step: 6,
+    title: 'Open-Meteo에서 429 Too Many Requests가 발생하는 문제',
+    symptom: '대시보드를 여러 번 새로고침하니 일사량 데이터만 불러오지 못했다.',
+    cause: [
+      '사업장 6곳의 일사량을 각각 요청해 화면 진입마다 6번을 호출했다.',
+      '무료 API는 분당·시간당 호출 제한이 있다.',
+    ],
+    solution:
+      'Open-Meteo는 좌표를 쉼표로 이어 보내면 여러 지점을 한 번에 조회할 수 있다. 요청을 6회에서 1회로 줄였다. 응답은 지점 수만큼의 배열로 돌아오므로 배열 여부를 확인해 처리한다.',
+    code: 'latitude: sites.map((s) => s.lat).join(\',\')',
   },
   {
     id: 'bundle-size',
