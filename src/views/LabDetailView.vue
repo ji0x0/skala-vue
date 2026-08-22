@@ -17,6 +17,11 @@ const LIVE_COMPONENTS = {
   WeatherParent: defineAsyncComponent(
     () => import('@/components/exercise/WeatherParent.vue'),
   ),
+  Lab4RouterDemo: defineAsyncComponent(() => import('@/components/lab/Lab4RouterDemo.vue')),
+  Lab5StoreDemo: defineAsyncComponent(() => import('@/components/lab/Lab5StoreDemo.vue')),
+  Lab6AxiosDemo: defineAsyncComponent(() => import('@/components/lab/Lab6AxiosDemo.vue')),
+  Lab7UiDemo: defineAsyncComponent(() => import('@/components/lab/Lab7UiDemo.vue')),
+  Lab8QualityDemo: defineAsyncComponent(() => import('@/components/lab/Lab8QualityDemo.vue')),
 }
 
 const lab = computed(() => findLabByStep(route.params.step))
@@ -80,14 +85,20 @@ const nextLab = computed(() => (lab.value ? findLabByStep(lab.value.step + 1) : 
       <el-card v-if="liveComponent" class="live-card" shadow="hover">
         <template #header>
           <div class="live-head">
-            <strong>▶️ 당시 실습 결과물 실행</strong>
+            <strong>▶️ {{ lab.step <= 3 ? '당시 실습 결과물 실행' : '핵심 개념 데모' }}</strong>
             <el-tag size="small" type="success">실제 동작하는 컴포넌트</el-tag>
           </div>
         </template>
 
         <el-alert type="info" :closable="false" class="live-alert">
-          아래는 실습 {{ lab.step }}단계에서 작성한 컴포넌트를 그대로 렌더링한 것입니다.
-          이후 단계에서 대시보드가 바뀌었어도 당시 결과물은 이 화면에서 계속 확인할 수 있습니다.
+          <template v-if="lab.step <= 3">
+            아래는 실습 {{ lab.step }}단계에서 작성한 컴포넌트를 그대로 렌더링한 것입니다.
+            이후 단계에서 대시보드가 바뀌었어도 당시 결과물은 이 화면에서 계속 확인할 수 있습니다.
+          </template>
+          <template v-else>
+            실습 {{ lab.step }}단계는 화면보다 구조를 바꾸는 단계라, 이 단계에서 배운 내용을
+            직접 조작해 볼 수 있는 데모로 만들었습니다. 실제로 동작하는 이 앱의 값을 그대로 읽어 옵니다.
+          </template>
         </el-alert>
 
         <div class="live-frame">
@@ -96,8 +107,7 @@ const nextLab = computed(() => (lab.value ? findLabByStep(lab.value.step + 1) : 
       </el-card>
 
       <el-alert v-else type="warning" :closable="false" class="live-alert">
-        이 단계는 화면 결과물보다 구조 변경(라우터·스토어·API·배포 설정)이 중심이라
-        별도의 실행 화면 대신 위의 요구사항과 확장 내역으로 정리했습니다.
+        이 단계는 실행 화면 대신 위의 요구사항과 확장 내역으로 정리했습니다.
       </el-alert>
 
       <div class="nav-actions">

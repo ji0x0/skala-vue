@@ -72,7 +72,7 @@ export const LABS = [
       '실습 요구 View 외에 태양광 상세·실습 아카이브·실습 상세·트러블슈팅 View를 추가했다.',
       '실습 컴포넌트를 components/exercise 폴더로 격리했다.',
     ],
-    liveComponent: null,
+    liveComponent: 'Lab4RouterDemo',
   },
   {
     step: 5,
@@ -89,7 +89,7 @@ export const LABS = [
       'solarStore를 추가해 일사량과 예상 발전량을 계산한다.',
       'exchangeStore를 추가해 환율과 등락률, 비용 코멘트를 관리한다.',
     ],
-    liveComponent: null,
+    liveComponent: 'Lab5StoreDemo',
   },
   {
     step: 6,
@@ -108,7 +108,7 @@ export const LABS = [
       'Frankfurter 환율 API로 원자재 비용 변수를 추가했다.',
       'API 호출을 services 폴더로 분리해 화면과 통신 코드를 나눴다.',
     ],
-    liveComponent: null,
+    liveComponent: 'Lab6AxiosDemo',
   },
   {
     step: 7,
@@ -121,7 +121,7 @@ export const LABS = [
       '실습 아카이브를 el-timeline, 트러블슈팅을 el-collapse로 구성했다.',
       '요약 지표에 el-statistic과 el-tag를, 로딩에 v-loading을 적용했다.',
     ],
-    liveComponent: null,
+    liveComponent: 'Lab7UiDemo',
   },
   {
     step: 8,
@@ -138,7 +138,7 @@ export const LABS = [
       'SPA 직접 주소 접속을 위해 vercel.json에 rewrite 규칙을 추가했다.',
       '단계별 백업 파일과 임시 폴더를 .gitignore에 추가해 저장소를 정리했다.',
     ],
-    liveComponent: null,
+    liveComponent: 'Lab8QualityDemo',
   },
 ]
 

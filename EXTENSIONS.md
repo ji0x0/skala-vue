@@ -102,7 +102,22 @@
 
 - `SolarDetailView.vue` — `/solar/:region`. 시간대별 일사량 예보와 전력거래소 실측 발전량을 막대 그래프로 비교한다.
 - `LabArchiveView.vue` — `/labs`. 실습 1~8단계를 `el-timeline`으로 정리했다.
-- `LabDetailView.vue` — `/labs/:step`. 단계별 요구사항과 개인 확장 내역을 보여주고, 실습 1~3단계는 당시 컴포넌트를 실제로 렌더링한다.
+- `LabDetailView.vue` — `/labs/:step`. 단계별 요구사항과 개인 확장 내역을 보여주고, **8단계 모두 실행 화면을 제공한다.**
+
+실습 1~3단계는 당시 작성한 컴포넌트를 그대로 렌더링하고, 화면 결과물이 없는 4~8단계는 그 단계의 핵심 개념을 직접 조작해 볼 수 있는 데모 컴포넌트를 만들었다. 데모는 설명용 목업이 아니라 **현재 실행 중인 앱의 실제 값을 읽어 온다.**
+
+| 단계 | 실행 화면 | 내용 |
+| --- | --- | --- |
+| 1 | `WeatherMockup` | 당시 목업 화면 그대로 |
+| 2 | `WeatherComposition` | 당시 반응형 화면 그대로 |
+| 3 | `WeatherParent` | 당시 컴포넌트 분리 결과 그대로 |
+| 4 | `Lab4RouterDemo` | 등록된 라우트 표, 현재 route 정보, 주소를 입력하면 이동 없이 매칭 결과 확인 |
+| 5 | `Lab5StoreDemo` | Store 5종의 실시간 state·getter, 단위 토글로 반응형 확인 |
+| 6 | `Lab6AxiosDemo` | API 7종을 실제로 호출해 상태 코드·소요 시간·원본 JSON 표시 |
+| 7 | `Lab7UiDemo` | 같은 UI를 직접 만든 버전과 Element Plus 버전으로 나란히 비교 |
+| 8 | `Lab8QualityDemo` | 환경변수 주입 상태(값 비노출), 빌드 정보, Catch-all 확인, 품질 체크리스트 |
+
+데모 컴포넌트는 `src/components/lab/`에 두어 실습 부품 컴포넌트(`components/exercise/`)와 구분했다. `Lab8QualityDemo`는 API 키의 **주입 여부와 길이만** 표시하고 값은 절대 출력하지 않는다.
 - `TroubleshootingView.vue` — `/troubleshooting`. 트러블슈팅 17건을 카테고리 필터와 검색으로 탐색한다.
 
 라우터에는 `meta.title`(문서 제목 자동 변경)과 `scrollBehavior`(화면 전환 시 상단 이동)를 추가했고, 8개 View 전부에 지연 로딩을 적용했다.
