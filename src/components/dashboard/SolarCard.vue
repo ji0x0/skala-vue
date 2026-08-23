@@ -15,10 +15,13 @@ const headline = computed(() => {
   return `오늘은 ${best.siteName}의 발전 여건이 가장 좋습니다. (등가가동시간 ${best.fullLoadHours}시간)`
 })
 
-/** 등가가동시간이 길수록 진하게 표시해 한눈에 비교되게 한다. */
+/**
+ * 국내 연평균 등가가동시간과 견주어 색을 정한다.
+ * 기준값은 Store에서 읽어 오므로 서비스 소개의 안내와 어긋나지 않는다.
+ */
 const hourType = (hours) => {
-  if (hours >= 4.5) return 'success'
-  if (hours >= 3) return 'warning'
+  if (hours >= solarStore.clearDayHours) return 'success'
+  if (hours >= solarStore.annualAverageHours) return 'warning'
 
   return 'info'
 }
@@ -87,8 +90,9 @@ const hourType = (hours) => {
 
       <small class="hint">
         등가가동시간은 오늘 발전량을 설비용량으로 나눈 값으로, 정격 출력으로 몇 시간
-        돌린 것과 같은지를 뜻합니다. 설비 용량이 달라도 그대로 비교할 수 있어
-        발전 여건을 견주는 데 씁니다.
+        돌린 것과 같은지를 뜻합니다. 설비 용량이 달라도 그대로 비교할 수 있습니다.
+        국내 연평균은 약 {{ solarStore.annualAverageHours }}시간이며,
+        {{ solarStore.clearDayHours }}시간 이상이면 맑은 날 수준으로 봅니다.
       </small>
     </template>
   </el-card>

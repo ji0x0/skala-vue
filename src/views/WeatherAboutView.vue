@@ -62,6 +62,11 @@ const metricRules = computed(() => [
     note: '정격 출력으로 몇 시간 돌린 것과 같은지를 뜻합니다. 설비 용량이 달라도 그대로 비교할 수 있어 사업장 간 발전 여건을 견주는 데 씁니다.',
   },
   {
+    metric: '발전 여건 등급',
+    formula: `${solarStore.clearDayHours}시간 이상이면 좋음, ${solarStore.annualAverageHours}시간 이상이면 보통, 그 미만은 낮음`,
+    note: `국내 태양광 연평균 일 등가가동시간이 약 ${solarStore.annualAverageHours}시간(연평균 이용률 약 14%)인 점을 기준으로 삼았습니다.`,
+  },
+  {
     metric: '전력비 절감액',
     formula: `예상 발전량(kWh) × ${solarStore.powerUnitPrice}원`,
     note: '산업용 전력 단가 가정치입니다.',

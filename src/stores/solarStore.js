@@ -13,6 +13,19 @@ const PERFORMANCE_RATIO = 0.8
 /** 산업용 전력 단가 가정치 (원/kWh) */
 const POWER_UNIT_PRICE = 165
 
+/**
+ * 국내 태양광 연평균 일 등가가동시간 (시간).
+ * 연평균 이용률을 약 14%로 보면 24시간 × 0.14 ≈ 3.4시간이다.
+ * 오늘 발전 여건이 연평균보다 나은지 판단하는 기준으로 쓴다.
+ */
+const ANNUAL_AVERAGE_HOURS = 3.4
+
+/**
+ * 맑은 날 수준으로 보는 일 등가가동시간 (시간).
+ * 봄·여름 맑은 날은 4.5-5.5시간대에 들어간다.
+ */
+const CLEAR_DAY_HOURS = 4.5
+
 /** 사업장 도시명 → 한국전력거래소 시도명 매핑 */
 const REGION_TO_KPX_NAME = {
   seoul: '서울시',
@@ -195,6 +208,8 @@ export const useSolarStore = defineStore('solar', () => {
     actualError,
     powerUnitPrice: POWER_UNIT_PRICE,
     performanceRatio: PERFORMANCE_RATIO,
+    annualAverageHours: ANNUAL_AVERAGE_HOURS,
+    clearDayHours: CLEAR_DAY_HOURS,
     rankedSites,
     totalGenerationToday,
     expectedSavingToday,
