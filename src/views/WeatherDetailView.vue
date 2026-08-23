@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useConfigStore } from '@/stores/configStore.js'
 import { findSiteById } from '@/data/sites.js'
 import { fetchAirQuality, fetchCurrentWeather, fetchForecast } from '@/services/weatherApi.js'
+import { calculateCai, toGrade } from '@/utils/airQuality.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -44,19 +45,18 @@ const processAdvice = computed(() => {
   return advice
 })
 
-/** 대기질 지수 등급 */
-const aqiLevel = computed(() => {
-  if (!airQuality.value) return { type: 'info', label: '측정 중' }
+/**
+ * 대기질은 국내 기준으로 판단한다.
+ * Open-Meteo의 european_aqi는 유럽 기준이라 국내 예보 등급과 어긋나므로,
+ * 같은 응답의 PM10·PM2.5 농도로 환경부 통합대기환경지수(CAI)를 계산한다.
+ */
+const cai = computed(() => {
+  if (!airQuality.value) return { index: null, indexPm10: null, indexPm25: null, dominant: null }
 
-  const aqi = airQuality.value.european_aqi
-
-  if (aqi <= 20) return { type: 'success', label: '좋음' }
-  if (aqi <= 40) return { type: 'success', label: '양호' }
-  if (aqi <= 60) return { type: 'warning', label: '보통' }
-  if (aqi <= 80) return { type: 'warning', label: '나쁨' }
-
-  return { type: 'danger', label: '매우 나쁨' }
+  return calculateCai(airQuality.value.pm10, airQuality.value.pm2_5)
 })
+
+const aqiLevel = computed(() => toGrade(cai.value.index))
 
 const formatForecastTime = (dateTime) =>
   new Intl.DateTimeFormat('ko-KR', {
@@ -191,16 +191,23 @@ onMounted(async () => {
       <el-card v-if="airQuality" class="air-quality-card" shadow="hover">
         <template #header>
           <div class="card-header">
-            <strong>🌿 실시간 대기질 (Open-Meteo / CAMS)</strong>
+            <strong>🌿 실시간 대기질</strong>
             <el-tag :type="aqiLevel.type" size="small">{{ aqiLevel.label }}</el-tag>
           </div>
         </template>
         <div class="stat-row">
-          <el-statistic title="유럽 대기질 지수" :value="airQuality.european_aqi" />
+          <el-statistic title="통합대기환경지수" :value="cai.index ?? 0" />
           <el-statistic title="미세먼지 PM10" :value="airQuality.pm10" suffix="㎍/㎥" />
           <el-statistic title="초미세먼지 PM2.5" :value="airQuality.pm2_5" suffix="㎍/㎥" />
         </div>
-        <small class="hint">클린룸·도장 공정은 외기 유입 필터 관리에 참고하세요.</small>
+
+        <p v-if="aqiLevel.advice" class="advice-line">{{ aqiLevel.advice }}</p>
+
+        <small class="hint">
+          환경부 통합대기환경지수(CAI) 기준으로 계산했습니다.
+          <template v-if="cai.dominant">{{ cai.dominant }}가 등급을 결정했습니다.</template>
+          농도 자료는 Open-Meteo Air Quality(CAMS)를 사용합니다.
+        </small>
       </el-card>
 
       <div class="actions">
@@ -290,10 +297,16 @@ onMounted(async () => {
   color: var(--el-text-color-regular);
 }
 
+.advice-line {
+  margin: 14px 0 0;
+  color: var(--el-text-color-regular);
+}
+
 .hint {
   display: block;
   margin-top: 10px;
   color: var(--el-text-color-secondary);
+  line-height: 1.6;
 }
 
 .actions {

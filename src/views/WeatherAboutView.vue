@@ -62,6 +62,11 @@ const metricRules = computed(() => [
     note: '산업용 전력 단가 가정치입니다.',
   },
   {
+    metric: '대기질 등급',
+    formula: '환경부 통합대기환경지수(CAI): 좋음 0-50, 보통 51-100, 나쁨 101-250, 매우 나쁨 251 이상',
+    note: 'PM10과 PM2.5 농도를 각각 지수로 환산해 더 나쁜 쪽을 대표값으로 씁니다.',
+  },
+  {
     metric: '유가 추세',
     formula: `최근 7일 등락률이 ±${fuelStore.trendThreshold}% 를 넘으면 상승·하락으로 표시`,
     note: '자동차용 경유 전국 평균가를 기준으로 합니다.',

@@ -166,6 +166,20 @@ export const TROUBLES = [
     code: "new URLSearchParams({ serviceKey: process.env.DATA_GO_KR_API_KEY })",
   },
   {
+    id: 'aqi-standard',
+    category: 'API',
+    step: 6,
+    title: '대기질 등급이 국내 예보와 다르게 표시되는 문제',
+    symptom: '미세먼지 농도는 보통 수준인데 화면에는 나쁨으로 표시됐다.',
+    cause: [
+      'Open-Meteo가 내려주는 european_aqi를 그대로 등급 판정에 사용했다.',
+      '유럽 기준은 국내 환경부 기준과 구간이 달라 같은 농도라도 등급이 어긋난다.',
+    ],
+    solution:
+      '같은 응답에 들어 있는 PM10·PM2.5 농도로 환경부 통합대기환경지수(CAI)를 직접 계산하도록 바꿨다. 각 항목을 구간별 선형 보간으로 지수화한 뒤 더 나쁜 쪽을 대표값으로 삼는다. 외부 API를 바꾸지 않고 판정 기준만 국내 기준으로 맞췄다.',
+    code: 'const index = Math.max(toIndex(pm10, PM10_TABLE), toIndex(pm25, PM25_TABLE))',
+  },
+  {
     id: 'openmeteo-unit',
     category: 'API',
     step: 6,

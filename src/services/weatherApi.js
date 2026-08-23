@@ -33,7 +33,8 @@ export const fetchAirQuality = (latitude, longitude) =>
     params: {
       latitude,
       longitude,
-      current: 'european_aqi,pm10,pm2_5',
+      // 등급은 PM 농도로 직접 계산하므로 유럽 기준 지수는 받지 않는다.
+      current: 'pm10,pm2_5',
       timezone: 'auto',
     },
   })
