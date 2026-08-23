@@ -15,6 +15,9 @@ const CURRENCY_META = {
   AUD: { label: '호주 달러', flag: '🇦🇺', note: '광물·원료 수입 단가' },
 }
 
+/** 이 값을 넘어서면 강세·약세 구간으로 본다. (%) */
+const CHANGE_THRESHOLD = 1
+
 const toDateString = (date) => date.toISOString().slice(0, 10)
 
 /**
@@ -70,11 +73,11 @@ export const useExchangeStore = defineStore('exchange', () => {
   const costComment = computed(() => {
     if (history.value.length < 2) return '환율 추이를 불러오는 중입니다.'
 
-    if (changeRate.value > 1) {
+    if (changeRate.value > CHANGE_THRESHOLD) {
       return '원화 약세 구간입니다. 수입 원자재 단가 상승에 유의하세요.'
     }
 
-    if (changeRate.value < -1) {
+    if (changeRate.value < -CHANGE_THRESHOLD) {
       return '원화 강세 구간입니다. 수입 원자재 매입에 유리합니다.'
     }
 
@@ -129,6 +132,8 @@ export const useExchangeStore = defineStore('exchange', () => {
     usdKrw,
     majorRates,
     changeRate,
+    changeThreshold: CHANGE_THRESHOLD,
+    historyDays: HISTORY_DAYS,
     costComment,
     historyRange,
     fetchRates,

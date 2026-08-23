@@ -1,8 +1,77 @@
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { SITES } from '@/data/sites.js'
+import { useWeatherStore } from '@/stores/weatherStore.js'
+import { useSolarStore } from '@/stores/solarStore.js'
+import { useFuelStore } from '@/stores/fuelStore.js'
+import { useExchangeStore } from '@/stores/exchangeStore.js'
 
 const router = useRouter()
+
+// 판단 기준은 화면에 적어두지 않고 각 Store에서 실제 사용 중인 값을 읽어 온다.
+// 기준을 바꾸면 이 표도 함께 바뀌므로 설명과 동작이 어긋나지 않는다.
+const weatherStore = useWeatherStore()
+const solarStore = useSolarStore()
+const fuelStore = useFuelStore()
+const exchangeStore = useExchangeStore()
+
+/** 사업장 상태를 어떤 기준으로 나누는지 */
+const riskRules = computed(() => [
+  {
+    label: '고온·다습',
+    type: 'danger',
+    condition: `기온 ${weatherStore.tempThreshold}℃ 이상이면서 습도 ${weatherStore.humidityThreshold}% 이상`,
+    meaning: '설비 과열과 결로가 동시에 우려됩니다. 우선 점검 대상입니다.',
+  },
+  {
+    label: '고온',
+    type: 'warning',
+    condition: `기온 ${weatherStore.tempThreshold}℃ 이상`,
+    meaning: '설비 과열과 작업자 온열질환에 유의해야 합니다.',
+  },
+  {
+    label: '다습',
+    type: 'warning',
+    condition: `습도 ${weatherStore.humidityThreshold}% 이상`,
+    meaning: '도장·건조 공정 품질과 결로를 점검해야 합니다.',
+  },
+  {
+    label: '정상',
+    type: 'success',
+    condition: '위 조건에 해당하지 않음',
+    meaning: '환경 조건이 정상 범위입니다.',
+  },
+])
+
+/** 지표별 계산식과 판단 기준 */
+const metricRules = computed(() => [
+  {
+    metric: '공정 점검 대상',
+    formula: `기온 ${weatherStore.tempThreshold}℃ 이상 또는 습도 ${weatherStore.humidityThreshold}% 이상`,
+    note: '둘 중 하나만 넘어도 경보로 집계합니다.',
+  },
+  {
+    metric: '태양광 예상 발전량',
+    formula: `일사량(kWh/m²) × 설비용량(kWp) × 성능비 ${solarStore.performanceRatio}`,
+    note: '설비용량은 일사량 1,000W/m² 기준으로 정의되어 그대로 곱합니다.',
+  },
+  {
+    metric: '전력비 절감액',
+    formula: `예상 발전량(kWh) × ${solarStore.powerUnitPrice}원`,
+    note: '산업용 전력 단가 가정치입니다.',
+  },
+  {
+    metric: '유가 추세',
+    formula: `최근 7일 등락률이 ±${fuelStore.trendThreshold}% 를 넘으면 상승·하락으로 표시`,
+    note: '자동차용 경유 전국 평균가를 기준으로 합니다.',
+  },
+  {
+    metric: '환율 추세',
+    formula: `최근 ${exchangeStore.historyDays}일 등락률이 ±${exchangeStore.changeThreshold}% 를 넘으면 강세·약세로 표시`,
+    note: '원/달러 환율을 기준으로 합니다.',
+  },
+])
 
 const VALUES = [
   {
@@ -66,6 +135,35 @@ const TECH = [
       </el-card>
     </div>
 
+    <h3 class="section-title">판단 기준</h3>
+    <p class="section-desc">
+      화면에 표시되는 경보와 코멘트는 아래 기준으로 계산합니다.
+      실제 서비스에서 쓰는 값을 그대로 읽어와 표시하므로 설명과 동작이 어긋나지 않습니다.
+    </p>
+
+    <h4 class="sub-title">사업장 상태</h4>
+    <el-table :data="riskRules" size="small" style="width: 100%">
+      <el-table-column label="표시" min-width="100">
+        <template #default="{ row }">
+          <el-tag :type="row.type" size="small">{{ row.label }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="condition" label="조건" min-width="220" />
+      <el-table-column prop="meaning" label="의미" min-width="260" />
+    </el-table>
+
+    <h4 class="sub-title">지표 계산식</h4>
+    <el-table :data="metricRules" size="small" style="width: 100%">
+      <el-table-column prop="metric" label="지표" min-width="130" />
+      <el-table-column prop="formula" label="계산식 · 기준" min-width="280" />
+      <el-table-column prop="note" label="참고" min-width="230" />
+    </el-table>
+
+    <el-alert type="info" :closable="false" class="rule-note">
+      기온 표시는 상단 설정에서 섭씨와 화씨를 전환할 수 있습니다.
+      기준값 자체는 섭씨로 판정하며, 화면 표시만 바뀝니다.
+    </el-alert>
+
     <h3 class="section-title">관측 대상 사업장</h3>
     <el-table :data="SITES" size="small" style="width: 100%">
       <el-table-column prop="siteName" label="사업장" min-width="140" />
@@ -128,6 +226,22 @@ const TECH = [
   margin: 26px 0 12px;
   padding-left: 8px;
   border-left: 3px solid var(--el-color-primary);
+}
+
+.section-desc {
+  margin: 0 0 14px;
+  color: var(--el-text-color-regular);
+  line-height: 1.7;
+}
+
+.sub-title {
+  margin: 18px 0 8px;
+  color: var(--el-text-color-regular);
+  font-size: 14px;
+}
+
+.rule-note {
+  margin-top: 14px;
 }
 
 .value-grid {

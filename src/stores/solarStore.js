@@ -176,6 +176,7 @@ export const useSolarStore = defineStore('solar', () => {
     actualDate,
     actualError,
     powerUnitPrice: POWER_UNIT_PRICE,
+    performanceRatio: PERFORMANCE_RATIO,
     totalGenerationToday,
     expectedSavingToday,
     bestSite,

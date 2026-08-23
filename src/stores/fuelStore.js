@@ -18,6 +18,9 @@ const PRODUCT_META = {
 /** 물류비 영향도가 가장 큰 제품 */
 const PRIMARY_PRODUCT = 'D047'
 
+/** 이 값을 넘어서면 추세가 있다고 본다. (%) */
+const TREND_THRESHOLD = 0.5
+
 export const useFuelStore = defineStore('fuel', () => {
   // ===== state =====
   const nationalPrices = ref([])
@@ -55,11 +58,11 @@ export const useFuelStore = defineStore('fuel', () => {
   const costComment = computed(() => {
     if (trend.value.length < 2) return '유가 추이를 불러오는 중입니다.'
 
-    if (trendChangeRate.value > 0.5) {
+    if (trendChangeRate.value > TREND_THRESHOLD) {
       return '경유가 상승 추세입니다. 물류·보일러 가동 비용 증가에 대비하세요.'
     }
 
-    if (trendChangeRate.value < -0.5) {
+    if (trendChangeRate.value < -TREND_THRESHOLD) {
       return '경유가 하락 추세입니다. 물류비 부담이 완화되는 구간입니다.'
     }
 
@@ -133,6 +136,7 @@ export const useFuelStore = defineStore('fuel', () => {
     dieselPrice,
     dieselDiff,
     trendChangeRate,
+    trendThreshold: TREND_THRESHOLD,
     costComment,
     regionalDiesel,
     trendRange,
