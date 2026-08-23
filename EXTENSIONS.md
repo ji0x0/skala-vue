@@ -106,9 +106,9 @@ README의 과제 수행 내용과 추가 기능을 보완하는 구현 기록이
 | Store | state | getters | actions |
 | --- | --- | --- | --- |
 | `weatherStore` | 사업장 날씨, 경보 기준 온도·습도 | `riskySites`, `summary`, `getWeatherById` | `fetchAllSites`, `setTempThreshold` |
-| `solarStore` | 일사량 예측, 전력거래소 실측 | `totalGenerationToday`, `expectedSavingToday`, `rankedSites`, `bestSite`, `getActualByRegion` | `fetchAllSites`, `fetchOneRegion`, `fetchActual` |
+| `solarStore` | 일사량 예측, 당일 캐시, 전력거래소 실측 | `totalGenerationToday`, `expectedSavingToday`, `rankedSites`, `bestSite`, `getActualByRegion` | `fetchAllSites`, `fetchOneRegion`, `fetchActual` |
 | `fuelStore` | 전국·지역 유가, 최근 추이 | `dieselPrice`, `trendChangeRate`, `costComment`, `regionalDiesel` | `fetchFuelPrices` |
-| `exchangeStore` | 주요 통화 환율, 원/달러 추이 | `majorRates`, `changeRate`, `costComment`, `historyRange` | `fetchRates` |
+| `exchangeStore` | 주요 통화 환율, 원/달러 추이 | `majorRates`, `changeRate`, `changeAmount`, `costComment`, `historyRange` | `fetchRates` |
 
 기존 `configStore`까지 합쳐 Store는 총 5개다. `configStore`에는 화면 테마(라이트/다크) state와 action을 추가했고, 단위와 테마 모두 `localStorage`에 저장해 다시 방문해도 유지된다.
 
@@ -125,7 +125,7 @@ README의 과제 수행 내용과 추가 기능을 보완하는 구현 기록이
 | OpenWeather Current Weather | 사업장 실시간 날씨 | 필요 | 허용 |
 | OpenWeather 5 Day / 3 Hour Forecast | 단기 예보 | 필요 | 허용 |
 | Open-Meteo Air Quality | 미세먼지 농도 | 불필요 | 허용 |
-| Open-Meteo Forecast | 일사량·일조시간 | 불필요 | 허용 |
+| Open-Meteo Forecast | 일사량·일조시간 | 불필요 | 허용, 서버리스·CDN 캐시 적용 |
 | 한국전력거래소 지역별 시간별 태양광 발전량 | 실측 발전량 | 필요 | 허용 |
 | 오피넷 평균 유가 | 전국·지역 유가, 최근 추이 | 필요 | **차단** |
 | Frankfurter | 주요 6개 통화 환율 | 불필요 | 허용 |
@@ -143,7 +143,13 @@ README의 과제 수행 내용과 추가 기능을 보완하는 구현 기록이
 | 전력비 절감액 | 예상 발전량(kWh) × 165원 |
 | 대기질 등급 | PM10·PM2.5를 국내 CAI 구간에 대입한 간이 지수 |
 | 유가 추세 | 최근 7일 등락률 ±0.5% 초과 시 상승·하락 |
-| 환율 추세 | 최근 30일 등락률 ±1% 초과 시 강세·약세 |
+| 환율 추세 | 최근 30일 등락률 ±1% 초과 시 강세·약세, 첫 영업일 대비 증감액 표시 |
+
+### 태양광 데이터 캐시
+
+Open-Meteo 일사량은 사업장 6곳을 다중 좌표 요청 한 번으로 조회한다. `/api/solar` 서버리스 함수는 응답을 Vercel CDN에 30분간 저장하고 갱신 중에는 마지막 정상 응답을 제공한다. 브라우저도 서울 날짜와 저장 시각을 붙여 `localStorage`에 보관하고 30분 동안 재사용한다. 캐시가 만료된 뒤 요청이 실패하면 같은 날 저장된 마지막 응답을 표시한다. 전날 데이터는 오늘 예측으로 오인될 수 있어 브라우저 fallback에서 제외한다.
+
+새로고침 버튼은 최신 응답을 시도하지만 실패 시 기존 데이터를 지우지 않는다. 이때 태양광 카드 위에 캐시 저장 시각을 안내해 실시간 응답처럼 보이지 않게 했다.
 
 사업장마다 설비 용량이 달라 발전량 절대값만으로는 여건을 비교할 수 없다. 처음에는 임의로 정한 일사량 기준값과 견주어 백분율로 보여줬는데, 기준을 어떻게 잡느냐에 따라 값이 달라지고 맑은 날에는 여러 사업장이 모두 100%로 표시되어 구분이 되지 않았다. 태양광에서 널리 쓰는 등가가동시간으로 바꿔 임의 가정을 없앴다.
 
@@ -195,8 +201,9 @@ grep -ro "발급받은_키" dist/assets/
 | `api/openweather.js` | 현재 날씨, 단기 예보 | 키 노출 |
 | `api/kpx.js` | 전력거래소 태양광 실측 | 키 노출 |
 | `api/opinet.js` | 전국·지역 유가 | 키 노출 + CORS 차단 |
+| `api/solar.js` | Open-Meteo 일사량 | 호출 제한 + CDN 캐시 |
 
-키가 필요 없는 Open-Meteo와 Frankfurter는 브라우저에서 그대로 호출한다. 서버를 거칠 이유가 없다.
+키가 필요 없는 Open-Meteo 대기질과 Frankfurter는 브라우저에서 그대로 호출한다. Open-Meteo 일사량만 호출 제한에 대비한 CDN 캐시 때문에 서버리스 함수를 거친다.
 
 함수는 호출 가능한 경로를 화이트리스트로 제한했다. 그렇게 하지 않으면 아무 주소나 대신 호출해 주는 열린 프록시가 된다.
 

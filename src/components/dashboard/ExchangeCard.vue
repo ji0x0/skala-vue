@@ -59,8 +59,9 @@ const sparklinePoints = (list, range) => {
       <div v-if="exchangeStore.history.length > 1" class="trend-box">
         <div class="trend-head">
           <span>원/달러 최근 30일 추이</span>
-          <strong :class="exchangeStore.changeRate > 0 ? 'up' : 'down'">
-            {{ formatKrw(exchangeStore.usdKrw) }}원
+          <strong :class="{ up: exchangeStore.changeAmount > 0, down: exchangeStore.changeAmount < 0 }">
+            30일 전 대비 {{ formatKrw(Math.abs(exchangeStore.changeAmount)) }}원
+            {{ exchangeStore.changeAmount > 0 ? '증가' : exchangeStore.changeAmount < 0 ? '감소' : '변동 없음' }}
           </strong>
         </div>
         <svg class="sparkline" viewBox="0 0 100 32" preserveAspectRatio="none">

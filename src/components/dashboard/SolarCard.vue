@@ -46,6 +46,14 @@ const hourType = (hours) => {
     <p v-if="solarStore.loadError" class="api-message error">{{ solarStore.loadError }}</p>
 
     <template v-else>
+      <el-alert
+        v-if="solarStore.cacheNotice"
+        :title="solarStore.cacheNotice"
+        type="warning"
+        :closable="false"
+        show-icon
+        class="cache-notice"
+      />
       <p class="headline">{{ headline }}</p>
 
       <div class="stat-row">
@@ -110,6 +118,10 @@ const hourType = (hours) => {
   margin: 0 0 14px;
   color: var(--el-text-color-primary);
   font-weight: 600;
+}
+
+.cache-notice {
+  margin-bottom: 14px;
 }
 
 .stat-row {

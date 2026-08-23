@@ -26,6 +26,55 @@ const ANNUAL_AVERAGE_HOURS = 3.4
  */
 const CLEAR_DAY_HOURS = 4.5
 
+/** Open-Meteo 호출을 줄이기 위한 브라우저 캐시 설정 */
+const SOLAR_CACHE_KEY = 'skala-vue:solar-forecast:v1'
+const SOLAR_CACHE_TTL = 30 * 60 * 1000
+
+const getSeoulDate = () => {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date())
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]))
+
+  return `${values.year}-${values.month}-${values.day}`
+}
+
+const readSolarCache = () => {
+  try {
+    const cached = JSON.parse(localStorage.getItem(SOLAR_CACHE_KEY))
+    const isValid =
+      cached?.date === getSeoulDate() &&
+      Number.isFinite(cached?.savedAt) &&
+      Array.isArray(cached?.items) &&
+      cached.items.length > 0
+
+    return isValid ? cached : null
+  } catch {
+    return null
+  }
+}
+
+const writeSolarCache = (items) => {
+  try {
+    localStorage.setItem(
+      SOLAR_CACHE_KEY,
+      JSON.stringify({ date: getSeoulDate(), savedAt: Date.now(), items }),
+    )
+  } catch {
+    // 저장 공간이 차단된 환경에서도 API 응답 자체는 정상적으로 표시한다.
+  }
+}
+
+const formatCacheTime = (savedAt) =>
+  new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(savedAt))
+
 /** 사업장 도시명 → 한국전력거래소 시도명 매핑 */
 const REGION_TO_KPX_NAME = {
   seoul: '서울시',
@@ -83,6 +132,7 @@ export const useSolarStore = defineStore('solar', () => {
   const solarList = ref([])
   const isLoading = ref(false)
   const loadError = ref('')
+  const cacheNotice = ref('')
 
   // 한국전력거래소 실측 발전량
   const actualList = ref([])
@@ -131,21 +181,38 @@ export const useSolarStore = defineStore('solar', () => {
   )
 
   // ===== actions =====
-  async function fetchAllSites() {
+  async function fetchAllSites({ force = false } = {}) {
     if (isLoading.value) return
 
-    isLoading.value = true
     loadError.value = ''
+    cacheNotice.value = ''
+
+    const cached = readSolarCache()
+    const isFresh = cached && Date.now() - cached.savedAt < SOLAR_CACHE_TTL
+
+    if (!force && isFresh) {
+      solarList.value = cached.items
+      return
+    }
+
+    isLoading.value = true
 
     try {
       // 사업장마다 따로 부르지 않고 한 번의 요청으로 전부 받아 온다.
       const response = await fetchSolarForecastBulk(SITES)
       const results = Array.isArray(response.data) ? response.data : [response.data]
 
-      solarList.value = results.map((data, index) => toSolarItem(SITES[index], data))
+      const items = results.map((data, index) => toSolarItem(SITES[index], data))
+      solarList.value = items
+      writeSolarCache(items)
     } catch (error) {
       console.error('태양광 예측 Store 로딩 실패:', error)
-      loadError.value = '태양광 일사량 데이터를 불러오지 못했습니다.'
+      if (cached) {
+        solarList.value = cached.items
+        cacheNotice.value = `Open-Meteo 요청이 지연되어 오늘 ${formatCacheTime(cached.savedAt)}에 저장한 일사량 데이터를 표시합니다.`
+      } else {
+        loadError.value = '태양광 일사량 데이터를 불러오지 못했습니다.'
+      }
     } finally {
       isLoading.value = false
     }
@@ -154,6 +221,13 @@ export const useSolarStore = defineStore('solar', () => {
   /** 상세 화면에서 특정 지역만 필요할 때 사용한다. */
   async function fetchOneRegion(region) {
     if (getSolarByRegion.value(region)) return
+
+    const cached = readSolarCache()
+    const cachedItem = cached?.items.find((item) => item.region === region)
+    if (cachedItem) {
+      solarList.value.push(cachedItem)
+      return
+    }
 
     const site = findSiteByRegion(region)
     if (!site) {
@@ -166,7 +240,8 @@ export const useSolarStore = defineStore('solar', () => {
 
     try {
       const response = await fetchSolarForecast(site.lat, site.lon)
-      solarList.value.push(toSolarItem(site, response.data))
+      const item = toSolarItem(site, response.data)
+      solarList.value.push(item)
     } catch (error) {
       console.error('태양광 상세 로딩 실패:', error)
       loadError.value = '태양광 일사량 데이터를 불러오지 못했습니다.'
@@ -203,6 +278,7 @@ export const useSolarStore = defineStore('solar', () => {
     solarList,
     isLoading,
     loadError,
+    cacheNotice,
     actualList,
     actualDate,
     actualError,

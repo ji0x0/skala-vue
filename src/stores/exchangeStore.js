@@ -69,6 +69,16 @@ export const useExchangeStore = defineStore('exchange', () => {
     return Math.round(((last - first) / first) * 1000) / 10
   })
 
+  /** 조회 구간 첫 영업일 대비 원/달러 변화 금액(원) */
+  const changeAmount = computed(() => {
+    if (history.value.length < 2) return 0
+
+    const first = history.value[0].value
+    const last = history.value[history.value.length - 1].value
+
+    return Math.round((last - first) * 100) / 100
+  })
+
   /** 등락 방향에 따른 운영 코멘트 */
   const costComment = computed(() => {
     if (history.value.length < 2) return '환율 추이를 불러오는 중입니다.'
@@ -132,6 +142,7 @@ export const useExchangeStore = defineStore('exchange', () => {
     usdKrw,
     majorRates,
     changeRate,
+    changeAmount,
     changeThreshold: CHANGE_THRESHOLD,
     historyDays: HISTORY_DAYS,
     costComment,

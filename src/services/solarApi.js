@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const OPEN_METEO_FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
+const SOLAR_FORECAST_PROXY_URL = '/api/solar'
 
 /** 전력거래소 실측 데이터는 인증키가 필요해 서버리스 함수를 거친다. */
 const KPX_PROXY_URL = '/api/kpx'
@@ -14,7 +14,7 @@ const KPX_PROXY_URL = '/api/kpx'
  * sunshine_duration          일조시간(초)
  */
 export const fetchSolarForecast = (latitude, longitude) =>
-  axios.get(OPEN_METEO_FORECAST_URL, {
+  axios.get(SOLAR_FORECAST_PROXY_URL, {
     params: {
       latitude,
       longitude,
@@ -31,7 +31,7 @@ export const fetchSolarForecast = (latitude, longitude) =>
  * 사업장마다 따로 요청하면 호출 수가 6배가 되어 레이트 리밋에 걸리기 쉽다.
  */
 export const fetchSolarForecastBulk = (sites) =>
-  axios.get(OPEN_METEO_FORECAST_URL, {
+  axios.get(SOLAR_FORECAST_PROXY_URL, {
     params: {
       latitude: sites.map((site) => site.lat).join(','),
       longitude: sites.map((site) => site.lon).join(','),

@@ -5,7 +5,7 @@ import axios from 'axios'
  *
  * OpenWeather는 API 키가 필요하므로 브라우저에서 직접 부르지 않고
  * /api/openweather 서버리스 함수를 거친다. 키는 서버에만 있다.
- * Open-Meteo는 키가 필요 없어 브라우저에서 바로 호출한다.
+ * Open-Meteo 대기질은 키가 필요 없어 브라우저에서 바로 호출한다.
  */
 const OPENWEATHER_PROXY_URL = '/api/openweather'
 const AIR_QUALITY_URL = 'https://air-quality-api.open-meteo.com/v1/air-quality'

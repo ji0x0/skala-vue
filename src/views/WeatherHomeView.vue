@@ -62,6 +62,13 @@ const isAnyLoading = computed(
 
 const refreshAll = () => {
   weatherStore.fetchAllSites()
+  solarStore.fetchAllSites({ force: true })
+  fuelStore.fetchFuelPrices()
+  exchangeStore.fetchRates()
+}
+
+const loadAll = () => {
+  weatherStore.fetchAllSites()
   solarStore.fetchAllSites()
   fuelStore.fetchFuelPrices()
   exchangeStore.fetchRates()
@@ -74,7 +81,7 @@ watch(
   },
 )
 
-onMounted(refreshAll)
+onMounted(loadAll)
 </script>
 
 <template>
