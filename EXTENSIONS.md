@@ -20,7 +20,7 @@
 
 | 축 | 내용 | 데이터 출처 |
 | --- | --- | --- |
-| 환경 리스크 | 사업장별 기온·습도로 공정 품질 변수 확인 | OpenWeather, Open-Meteo Air Quality |
+| 환경 리스크 | 사업장별 기온·습도와 대기질로 공정 품질 변수 확인 | OpenWeather, Open-Meteo Air Quality |
 | 에너지 기회 | 일사량 기반 태양광 자가발전 기대치와 실측 비교 | Open-Meteo Forecast, 한국전력거래소 |
 | 비용 변수 | 물류·연료비와 원자재 수입 단가 방향 확인 | 오피넷, Frankfurter |
 
@@ -33,80 +33,63 @@
 ├── 운영 브리핑 (/)                    통합 대시보드: 환경·에너지·비용 카드
 │   ├── 사업장 기상 상세 (/weather/:cityId)
 │   └── 태양광 발전 상세 (/solar/:region)
-├── 서비스 소개 (/about)               컨셉·핵심 가치·사업장·기술 스택
-├── 실습 아카이브 (/labs)              실습 1~8 타임라인
-│   └── 실습 상세 (/labs/:step)        요구사항·확장 내역·당시 결과물 실행
-├── 트러블슈팅 (/troubleshooting)      개발 중 겪은 문제 17건
+├── 서비스 소개 (/about)               컨셉·핵심 가치·판단 기준·사업장·기술 스택
+├── 실습 아카이브 (/labs)              실습 1-8 타임라인
+│   └── 실습 상세 (/labs/:step)        요구사항·확장 내역·실행 화면
+├── 트러블슈팅 (/troubleshooting)      개발 중 겪은 문제 21건
 └── 404 (Catch-all)
 ```
 
-## 완료한 작업
+## 과제별 완료 내역
+
+### 과제 1-3: 기본 문법
+
+- 목업 화면을 `v-for`, `v-if`, 이벤트 수식어로 구성했다.
+- `ref`, `computed`, `watch`, `watchEffect`로 검색과 필터링을 반응형으로 처리했다.
+- 하나의 화면을 `WeatherParent`, `BaseDashboardCard`, `SearchBar`, `WeatherCard` 네 컴포넌트로 나누고, 각 컴포넌트의 디자인을 `<style scoped>`로 분리했다.
 
 ### 과제 4: Vue Router
 
-- 날씨 대시보드와 서비스 소개 링크가 있는 Navigation Bar를 추가했다.
-- 페이지가 표시될 `<RouterView />`를 배치했다.
-- 다음 라우트를 추가했다.
-  - `/`
-  - `/about`
-  - `/weather/:cityId`
-  - `/:pathMatch(.*)*`
-- 날씨 카드에서 상세 페이지로 이동하는 Programmatic Navigation을 적용했다.
-- 날씨 상세, 서비스 소개, Not Found 페이지를 작성했다.
-- 보조 View에 Lazy Loading을 적용했다.
+- 내비게이션 바(`RouterLink`)와 메인 콘텐츠 영역(`RouterView`)을 배치했다.
+- `/`, `/about`, `/weather/:cityId`, Catch-all 라우트를 등록했다.
+- 상세보기에서 `window.alert()`를 제거하고 `router.push()`로 이동하도록 바꿨다.
+- 모든 View에 지연 로딩을 적용했다.
 
 ### 과제 5: Pinia Store
 
-- `main.js`에 Pinia를 등록했다.
-- `configStore.js`에 다음 항목을 작성했다.
-  - `unit` state
-  - `unitSymbol` getter
-  - `toggleUnit` action
-- Navigation Bar에 `UnitToggler.vue`를 배치했다.
-- 날씨 카드에 섭씨·화씨 변환을 적용했다.
-- 날씨 상세 페이지에도 동일한 단위 변환을 적용했다.
-- Store 및 Axios 적용 전 백업 파일을 보존했다.
+- `configStore.js`에 `unit` state, `unitSymbol` getter, `toggleUnit` action을 작성했다.
+- 내비게이션 바 옆에 단위 설정 UI를 배치하고, 메인과 상세 화면 모두에 반영했다.
 
-### 과제 6: Axios 및 OpenWeather
+### 과제 6: Axios 및 외부 API
 
-- Axios를 설치했다.
-- OpenWeather API 키를 발급하고 Postman으로 확인했다.
-- `.env`를 `.gitignore`에 등록했다.
-- 날씨 대시보드를 OpenWeather Current Weather API와 연결했다.
-- 서울, 부산, 대구, 광주, 대전, 울산 날씨를 병렬로 요청하도록 구성했다.
-- OpenWeather 응답을 기존 날씨 카드 데이터 구조로 변환했다.
-- 상세 페이지의 Mock Data를 실제 OpenWeather 요청으로 교체했다.
-- 로딩, 검색 결과 없음, API 오류 상태를 추가했다.
-- API 키 값을 출력하지 않고 OpenWeather 연결을 확인했다.
-- OpenWeather 5 Day Forecast API를 추가해 상세 화면에 3시간 간격 단기 예보를 표시했다.
-- Open-Meteo Air Quality API를 추가해 미세먼지와 대기질 지수를 표시했다.
-- API 요청을 `src/services/weatherApi.js`에 모아 화면과 통신 코드를 분리했다.
+- OpenWeather API 키를 발급하고 `.env`를 `.gitignore`에 등록했다.
+- 사업장 6곳의 날씨를 `Promise.all`로 병렬 요청하고, 응답을 화면 데이터 구조로 변환했다.
+- 상세 페이지의 Mock Data를 실제 요청으로 교체하고 로딩·검색 결과 없음·오류 상태를 추가했다.
+- OpenWeather 5 Day Forecast, Open-Meteo Air Quality를 추가했다.
+- API 요청을 `src/services/`로 모아 화면과 통신 코드를 분리했다.
 
 ### 과제 7: 외부 UI 라이브러리
 
-- 교재에서 다룬 Element Plus를 프로젝트에 등록했다.
-- 카드, 버튼, API 로딩 화면에 Element Plus 컴포넌트와 디렉티브를 적용했다.
-- 과제 6 상태의 `App.vue`를 `src/App.vue.beforeUI`에 보존했다.
+- Element Plus를 등록하고 카드, 버튼, 로딩 화면에 적용했다.
 
-### 과제 8: 품질 관리 및 배포 준비
+### 과제 8: 품질 관리 및 배포
 
-- ESLint 검사와 Vite 프로덕션 빌드를 완료했다.
+- ESLint 검사와 프로덕션 빌드를 통과시켰다.
 - `.env.example`을 추가하고 실제 `.env`가 Git에서 제외되는지 확인했다.
-- Vue Router의 직접 주소 접속을 위한 `vercel.json`을 추가했다.
-- 설치, 실행, 검사, 배포 방법을 `README.md`에 정리했다.
-- 과제 7 상태의 `App.vue`를 `src/App.vue.beforeQuality`에 보존했다.
+- SPA 직접 주소 접속을 위한 `vercel.json` rewrite를 추가했다.
 
-### 확장 기능: 통합 운영 브리핑
+## 확장 기능
 
-과제 요구 화면(홈·소개·상세·404)을 유지하면서 다음을 얹었다.
-
-**신규 View 4종 (과제 4 요구사항 6: 본인의 추가 view 작성 및 Routing)**
+### 신규 View 4종 (과제 4 요구사항 6)
 
 - `SolarDetailView.vue` — `/solar/:region`. 시간대별 일사량 예보와 전력거래소 실측 발전량을 막대 그래프로 비교한다.
-- `LabArchiveView.vue` — `/labs`. 실습 1~8단계를 `el-timeline`으로 정리했다.
+- `LabArchiveView.vue` — `/labs`. 실습 1-8단계를 `el-timeline`으로 정리했다.
 - `LabDetailView.vue` — `/labs/:step`. 단계별 요구사항과 개인 확장 내역을 보여주고, **8단계 모두 실행 화면을 제공한다.**
+- `TroubleshootingView.vue` — `/troubleshooting`. 트러블슈팅 21건을 카테고리 필터와 검색으로 탐색한다.
 
-실습 1~3단계는 당시 작성한 컴포넌트를 그대로 렌더링하고, 화면 결과물이 없는 4~8단계는 그 단계의 핵심 개념을 직접 조작해 볼 수 있는 데모 컴포넌트를 만들었다. 데모는 설명용 목업이 아니라 **현재 실행 중인 앱의 실제 값을 읽어 온다.**
+라우터에는 `meta.title`(문서 제목 자동 변경)과 `scrollBehavior`(화면 전환 시 상단 이동)를 추가했고, 8개 View 전부에 지연 로딩을 적용했다.
+
+실습 1-3단계는 당시 작성한 컴포넌트를 그대로 렌더링하고, 화면 결과물이 없는 4-8단계는 그 단계의 핵심 개념을 직접 조작해 볼 수 있는 데모 컴포넌트를 만들었다. 데모는 설명용 목업이 아니라 **현재 실행 중인 앱의 실제 값을 읽어 온다.**
 
 | 단계 | 실행 화면 | 내용 |
 | --- | --- | --- |
@@ -114,69 +97,72 @@
 | 2 | `WeatherComposition` | 당시 반응형 화면 그대로 |
 | 3 | `WeatherParent` | 당시 컴포넌트 분리 결과 그대로 |
 | 4 | `Lab4RouterDemo` | 등록된 라우트 표, 현재 route 정보, 주소를 입력하면 이동 없이 매칭 결과 확인 |
-| 5 | `Lab5StoreDemo` | Store 5종의 실시간 state·getter, 단위 토글로 반응형 확인 |
+| 5 | `Lab5StoreDemo` | Store 5종의 실시간 state·getter, 설정 토글로 전역 반응성 확인 |
 | 6 | `Lab6AxiosDemo` | API 7종을 실제로 호출해 상태 코드·소요 시간·원본 JSON 표시 |
 | 7 | `Lab7UiDemo` | 같은 UI를 직접 만든 버전과 Element Plus 버전으로 나란히 비교 |
-| 8 | `Lab8QualityDemo` | 환경변수 주입 상태(값 비노출), 빌드 정보, Catch-all 확인, 품질 체크리스트 |
+| 8 | `Lab8QualityDemo` | 환경변수 접근 시도 결과, 빌드 정보, Catch-all 확인, 품질 체크리스트 |
 
-데모 컴포넌트는 `src/components/lab/`에 두어 실습 부품 컴포넌트(`components/exercise/`)와 구분했다. `Lab8QualityDemo`는 API 키의 **주입 여부와 길이만** 표시하고 값은 절대 출력하지 않는다.
-- `TroubleshootingView.vue` — `/troubleshooting`. 트러블슈팅 17건을 카테고리 필터와 검색으로 탐색한다.
+데모 컴포넌트는 `src/components/lab/`에 두어 실습 부품 컴포넌트(`components/exercise/`)와 구분했다. `Lab8QualityDemo`는 API 키에 접근을 시도한 결과만 표시하고 값은 절대 출력하지 않는다.
 
-라우터에는 `meta.title`(문서 제목 자동 변경)과 `scrollBehavior`(화면 전환 시 상단 이동)를 추가했고, 8개 View 전부에 지연 로딩을 적용했다.
-
-**신규 Store 4종 (과제 5 요구사항 4: 본인만의 추가 Store)**
+### 신규 Store 4종 (과제 5 요구사항 4)
 
 | Store | state | getters | actions |
 | --- | --- | --- | --- |
 | `weatherStore` | 사업장 날씨, 경보 기준 온도·습도 | `riskySites`, `summary`, `getWeatherById` | `fetchAllSites`, `setTempThreshold` |
-| `solarStore` | 일사량 예측, 전력거래소 실측 | `totalGenerationToday`, `expectedSavingToday`, `bestSite`, `getActualByRegion` | `fetchAllSites`, `fetchOneRegion`, `fetchActual` |
+| `solarStore` | 일사량 예측, 전력거래소 실측 | `totalGenerationToday`, `expectedSavingToday`, `rankedSites`, `bestSite`, `getActualByRegion` | `fetchAllSites`, `fetchOneRegion`, `fetchActual` |
 | `fuelStore` | 전국·지역 유가, 최근 추이 | `dieselPrice`, `trendChangeRate`, `costComment`, `regionalDiesel` | `fetchFuelPrices` |
 | `exchangeStore` | 주요 통화 환율, 원/달러 추이 | `majorRates`, `changeRate`, `costComment`, `historyRange` | `fetchRates` |
 
 기존 `configStore`까지 합쳐 Store는 총 5개다. `configStore`에는 화면 테마(라이트/다크) state와 action을 추가했고, 단위와 테마 모두 `localStorage`에 저장해 다시 방문해도 유지된다.
 
-**설정 패널**
+### 설정 패널
 
 내비게이션의 "단위 변경" 버튼을 "설정 변경" 패널로 바꿨다. `el-popover` 안에 `el-switch` 두 개를 두어 화면 테마와 온도 단위를 한곳에서 조정한다.
 
 다크 모드는 Element Plus의 `theme-chalk/dark/css-vars.css`를 불러오고 `html`에 `dark` 클래스를 토글하는 방식이다. 직접 작성한 스타일에 하드코딩되어 있던 색상 118곳을 Element Plus의 CSS 변수(`--el-bg-color`, `--el-text-color-primary`, `--el-border-color` 등)로 바꿔 테마에 따라 함께 바뀌도록 했다. 다만 배지처럼 고정 강조색 배경 위의 글자는 흰색으로 유지했다.
 
-**API 확장 (과제 6 요구사항 2·3)**
+### API 확장 (과제 6 요구사항 2·3)
 
 | API | 용도 | 키 | CORS |
 | --- | --- | --- | --- |
 | OpenWeather Current Weather | 사업장 실시간 날씨 | 필요 | 허용 |
 | OpenWeather 5 Day / 3 Hour Forecast | 단기 예보 | 필요 | 허용 |
-| Open-Meteo Air Quality | 대기질·미세먼지 | 불필요 | 허용 |
+| Open-Meteo Air Quality | 미세먼지 농도 | 불필요 | 허용 |
 | Open-Meteo Forecast | 일사량·일조시간 | 불필요 | 허용 |
 | 한국전력거래소 지역별 시간별 태양광 발전량 | 실측 발전량 | 필요 | 허용 |
-| 오피넷 평균 유가 | 전국·지역 유가, 최근 추이 | 필요 | **차단 (프록시 필요)** |
+| 오피넷 평균 유가 | 전국·지역 유가, 최근 추이 | 필요 | **차단** |
 | Frankfurter | 주요 6개 통화 환율 | 불필요 | 허용 |
 
-오피넷만 `Access-Control-Allow-Origin` 헤더를 주지 않아 개발 서버는 `vite.config.js`의 `server.proxy`로, 배포 환경은 `vercel.json`의 `rewrites`로 우회한다.
+### 지표 계산 방식
 
-태양광 발전량은 일사량(kWh/m²) × 설비용량(kWp) × 성능비(0.8)로 추정하고, 산업용 전력 단가 165원/kWh를 곱해 절감액을 표시한다.
+화면에 표시하는 경보와 코멘트는 아래 기준으로 계산한다. 서비스 소개 화면에도 같은 내용을 표로 실었고, 표에 적히는 값은 각 Store에서 실제로 쓰는 값을 읽어 온다. 기준을 바꾸면 설명도 함께 바뀌므로 문서와 동작이 어긋나지 않는다.
 
-**Element Plus 적용 확대 (과제 7)**
-
-`el-menu`, `el-table`, `el-statistic`, `el-timeline`, `el-collapse`, `el-result`, `el-descriptions`, `el-page-header`, `el-progress`, `el-alert`, `el-tag`, `el-radio-group`, `el-empty`, `el-card`, `el-button`, `v-loading`을 사용했다.
-
-**기본 문법 요구사항 보강**
-
-- 과제 2 요구사항 5: `WeatherComposition.vue`에 `alertThreshold`·`sortOrder` 반응형 상태, `sortedWeatherList`·`processRiskSummary` Computed, Watcher 2종을 추가했다.
-- 과제 3 요구사항 5: 컴포넌트 디자인을 각 파일의 `<style scoped>`로 분리하고 전역 CSS에는 앱 셸 규칙만 남겼다.
-- 과제 4 요구사항 1: 홈 라우트를 정적 import에서 지연 로딩으로 바꿔 모든 View를 코드 분할했다.
-- 실습 컴포넌트를 명세와 동일하게 `components/exercise/`로 격리하고, View 파일명을 `WeatherHomeView` 형태로 통일했다.
-
-## 현재 API 데이터 매핑
-
-| 애플리케이션 데이터 | OpenWeather 응답 |
+| 지표 | 계산식 |
 | --- | --- |
-| 도시 | `name` 또는 내부 도시 매핑 |
-| 기온 | `main.temp` |
-| 날씨 상태 | `weather[0].description` |
-| 습도 | `main.humidity` |
-| 풍속 | `wind.speed` |
+| 공정 점검 대상 | 기온 30℃ 이상 또는 습도 80% 이상 |
+| 태양광 예상 발전량 | 일사량(kWh/m²) × 설비용량(kWp) × 성능비 0.8 |
+| 등가가동시간 | 오늘 발전량(kWh) ÷ 설비용량(kWp) |
+| 전력비 절감액 | 예상 발전량(kWh) × 165원 |
+| 대기질 등급 | 환경부 통합대기환경지수(CAI) |
+| 유가 추세 | 최근 7일 등락률 ±0.5% 초과 시 상승·하락 |
+| 환율 추세 | 최근 30일 등락률 ±1% 초과 시 강세·약세 |
+
+사업장마다 설비 용량이 달라 발전량 절대값만으로는 여건을 비교할 수 없다. 처음에는 임의로 정한 일사량 기준값과 견주어 백분율로 보여줬는데, 기준을 어떻게 잡느냐에 따라 값이 달라지고 맑은 날에는 여러 사업장이 모두 100%로 표시되어 구분이 되지 않았다. 태양광에서 널리 쓰는 등가가동시간으로 바꿔 임의 가정을 없앴다.
+
+대기질은 Open-Meteo가 내려주는 `european_aqi`를 쓰지 않는다. 유럽 기준은 국내 환경부 기준과 구간이 달라 같은 농도라도 등급이 어긋난다. 같은 응답의 PM10·PM2.5 농도로 CAI를 직접 계산해 국내 예보와 등급을 맞췄다.
+
+### 실습 패턴의 재사용
+
+실습에서 익힌 구조를 아카이브에만 두지 않고 실제 운영 화면에 적용했다.
+
+- 운영 브리핑의 환경 리스크 카드에 사업장 검색을 넣었다. `v-model` 대신 `:value`와 `@input`으로 다뤄 한글 조합 중에도 입력이 끊기지 않는다.
+- 상태 옆 상세보기 버튼에 `@click.stop`을 붙여 행 클릭 이벤트와 분리했다.
+- 표 아래 상태바를 두어 고른 사업장을 알리고, 아무것도 고르지 않았을 때는 등록된 사업장 수를 표시한다.
+- 트러블슈팅 검색도 같은 `SearchBar` 컴포넌트를 쓴다. `placeholder`와 `echoLabel` props를 추가해 두 곳에서 함께 쓸 수 있게 했고, 기존 props와 emits 구조는 그대로 유지했다.
+
+### Element Plus 적용 범위 (과제 7)
+
+`el-menu`, `el-table`, `el-statistic`, `el-timeline`, `el-collapse`, `el-result`, `el-descriptions`, `el-page-header`, `el-popover`, `el-switch`, `el-alert`, `el-tag`, `el-radio-group`, `el-empty`, `el-card`, `el-button`, `v-loading`을 사용했다.
 
 ## API 키 관리와 Vercel 배포
 
@@ -188,8 +174,8 @@
 
 ```bash
 # 옮기기 전
-grep -ro "F260821054" dist/assets/
-# dist/assets/WeatherHomeView-DhvX-bnA.js:F260821054   ← 키가 그대로 보인다
+grep -ro "발급받은_키" dist/assets/
+# dist/assets/WeatherHomeView-xxxx.js:발급받은_키   ← 키가 그대로 보인다
 ```
 
 원인은 단순하다. 브라우저가 외부 API를 **직접** 호출하기 때문이다. 요청을 보내려면 키가 브라우저 안에 있어야 하고, 브라우저 안에 있으면 볼 수 있다. 난독화나 인코딩은 의미가 없다. Network 탭에 요청 URL이 그대로 찍힌다.
@@ -209,7 +195,7 @@ grep -ro "F260821054" dist/assets/
 | `api/kpx.js` | 전력거래소 태양광 실측 | 키 노출 |
 | `api/opinet.js` | 전국·지역 유가 | 키 노출 + CORS 차단 |
 
-키가 필요 없는 Open-Meteo(일사량·대기질)와 Frankfurter(환율)는 브라우저에서 그대로 호출한다. 서버를 거칠 이유가 없다.
+키가 필요 없는 Open-Meteo와 Frankfurter는 브라우저에서 그대로 호출한다. 서버를 거칠 이유가 없다.
 
 함수는 호출 가능한 경로를 화이트리스트로 제한했다. 그렇게 하지 않으면 아무 주소나 대신 호출해 주는 열린 프록시가 된다.
 
@@ -226,7 +212,7 @@ grep -ro "F260821054" dist/assets/
 
 `api/` 폴더를 추가해도 Vue 앱은 여전히 정적 파일(`dist/`)로 배포된다. 서버리스 함수는 같은 도메인에 엔드포인트 몇 개를 얹는 것뿐이고, Vercel 무료 플랜에 포함된다. 과제의 "정적 웹 호스팅" 요건은 그대로 충족한다.
 
-다만 GitHub Pages는 서버 코드를 실행할 수 없어 이 방식을 쓸 수 없다. Netlify는 Netlify Functions로 같은 구조를 만들 수 있지만 코드 형식이 조금 다르다.
+다만 GitHub Pages는 서버 코드를 실행할 수 없어 이 방식을 쓸 수 없다.
 
 ### 로컬 개발은 npm run dev 그대로
 
@@ -245,10 +231,10 @@ Object.assign(process.env, env)
 
 ```bash
 npm run build
-grep -r "본인_키_값" dist/assets/
+grep -r "발급받은_키" dist/assets/
 ```
 
-앱 화면에서도 확인할 수 있다. `/labs/8` 데모가 클라이언트에서 세 키에 접근을 시도해 결과를 표시하고, 클라이언트 번들이 실제로 가진 환경변수 전체(`BASE_URL`, `DEV`, `MODE`, `PROD`, `SSR`)를 나열한다. API 키 이름은 하나도 없다.
+앱 화면에서도 확인할 수 있다. `/labs/8` 데모가 클라이언트에서 세 키에 접근을 시도해 결과를 표시하고, 클라이언트 번들이 실제로 가진 환경변수 전체를 나열한다. API 키 이름은 하나도 없다.
 
 ### Vercel 배포 절차
 
@@ -271,7 +257,7 @@ grep -r "본인_키_값" dist/assets/
 - Environment는 `Production`, `Preview`, `Development` 세 곳에 모두 체크한다.
 - 값 앞뒤에 따옴표를 붙이지 않는다.
 - 공공데이터포털 키는 인코딩된 값(`%2F`, `%3D` 포함)이 아니라 디코딩된 원본을 넣는다.
-- 환경변수를 추가·수정한 뒤에는 재배포해야 반영된다. `Deployments` 탭에서 `Redeploy`를 누른다.
+- 환경변수를 추가·수정한 뒤에는 재배포해야 반영된다.
 
 **3단계 — 배포 후 확인**
 
@@ -282,9 +268,9 @@ grep -r "본인_키_값" dist/assets/
 - 개발자 도구 Network 탭에서 요청 주소에 키가 없는지 확인
 - 시크릿 창으로 GitHub 저장소가 로그인 없이 보이는지 확인
 
-**배포 후 수정**
+**도메인**
 
-GitHub에 push할 때마다 Vercel이 자동으로 재배포한다. 배포한 뒤에 내용을 고쳐도 push만 하면 반영되므로, 먼저 배포하고 다듬어 나가도 된다. 환경변수는 이름이 바뀔 때만 다시 등록하면 된다.
+Vercel이 프로젝트 생성 시 임의의 주소를 프로젝트 도메인으로 등록한다. 이 주소는 배포할 때마다 다시 붙으므로, 별칭만 지우면 다음 배포에서 되살아난다. 프로젝트 도메인 목록에서 제거해야 완전히 없어진다.
 
 ### 그래도 남는 것
 
@@ -294,11 +280,10 @@ GitHub에 push할 때마다 Vercel이 자동으로 재배포한다. 배포한 �
 
 ## 배포 결과
 
-2026년 8월 22일 Vercel에 프로덕션 배포를 완료했다.
-
 - 주소: https://skala-vue-factory-daily-briefing.vercel.app
 - 환경변수 3종을 Production / Preview / Development 세 환경에 등록했다. Production과 Preview는 Vercel이 Sensitive로 처리해 대시보드에서도 값이 보이지 않는다.
 - 서버리스 함수 3개(`api/openweather`, `api/kpx`, `api/opinet`)가 정상 빌드되어 동작한다.
+- GitHub 저장소를 연결해 `main` 브랜치에 push하면 자동으로 재배포된다.
 
 배포본에서 확인한 내용은 다음과 같다.
 
@@ -313,23 +298,25 @@ GitHub에 push할 때마다 Vercel이 자동으로 재배포한다. 배포한 �
 
 ## 앞으로 진행할 작업
 
-### 배포 관련
+### 기능
 
-- 현재는 Vercel CLI로 배포한 상태라 GitHub 저장소와 연결되어 있지 않다. push해도 자동 재배포되지 않으므로, 대시보드에서 Git 연동을 하거나 `vercel deploy --prod` 를 실행해야 한다.
-- 배포 환경에서는 Vercel이 `VITE_VERCEL_*` 시스템 변수를 자동 주입한다. API 키와는 무관하지만 `/labs/8` 화면의 환경변수 목록이 길어져, 시스템 변수임을 표시하거나 걸러 낼 수 있다.
+- 에어코리아(한국환경공단) API를 붙여 예보 모델 추정치 대신 측정소 실측 대기질을 쓴다.
+- 사업장별로 공정 특성에 맞는 경보 기준을 따로 둔다. 클린룸은 습도 기준을 더 낮게 잡는 식이다.
+- 화면 문구를 한국어와 영어로 전환한다.
+
+### 품질
+
+- 서버리스 함수에 호출 횟수 제한과 요청 출처 검증을 추가한다.
+- Element Plus를 필요한 컴포넌트만 가져오도록 바꿔 번들 크기를 줄인다.
+- 단위 변환 로직이 여러 화면에 중복되므로 Composable로 추출한다.
+- 배포 환경에서 Vercel이 자동 주입하는 `VITE_VERCEL_*` 시스템 변수 때문에 `/labs/8`의 환경변수 목록이 길어진다. 시스템 변수임을 표시하거나 걸러 낸다.
 
 ### 제출 전 정리
 
 - `.env` 또는 실제 API 키가 Git 이력에 포함되지 않았는지 확인한다.
 - 최종 제출본에서도 ESLint와 프로덕션 빌드를 다시 실행한다.
-- 내비게이션, 단위 변경, API 로딩·오류 처리, 404 화면을 확인한다.
+- 내비게이션, 검색, 설정 변경, API 로딩·오류 처리, 404 화면을 확인한다.
 - 시크릿 창으로 저장소 접근을 확인한다.
-
-### 여유가 되면
-
-- 서버리스 함수로 API 키를 서버 측으로 옮긴다.
-- Element Plus를 필요한 컴포넌트만 가져오도록 바꿔 번들 크기를 줄인다.
-- 단위 변환 로직이 여러 화면에 중복되므로 Composable로 추출한다.
 
 ## 문서 관리 규칙
 

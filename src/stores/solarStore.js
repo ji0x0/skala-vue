@@ -13,13 +13,6 @@ const PERFORMANCE_RATIO = 0.8
 /** 산업용 전력 단가 가정치 (원/kWh) */
 const POWER_UNIT_PRICE = 165
 
-/**
- * 맑은 날 하루 일사량 가정치 (kWh/m²).
- * 사업장마다 설비 용량이 달라 발전량 절대값만으로는 여건을 비교할 수 없다.
- * 이 값을 기준으로 사업장별 최대 발전량을 구해 오늘 발전량과 견준다.
- */
-const REFERENCE_RADIATION = 5
-
 /** 사업장 도시명 → 한국전력거래소 시도명 매핑 */
 const REGION_TO_KPX_NAME = {
   seoul: '서울시',
@@ -37,9 +30,13 @@ const REGION_TO_KPX_NAME = {
 export const estimateGeneration = (radiationKwhPerM2, capacityKw) =>
   Math.round(radiationKwhPerM2 * capacityKw * PERFORMANCE_RATIO)
 
-/** 비교 기준이 되는 그 사업장의 하루 발전량 */
-export const estimateBaselineGeneration = (capacityKw) =>
-  Math.round(REFERENCE_RADIATION * capacityKw * PERFORMANCE_RATIO)
+/**
+ * 등가가동시간(Equivalent Full-Load Hours).
+ * 발전량을 설비용량으로 나눈 값으로, 정격 출력으로 몇 시간 돌린 것과 같은지를 뜻한다.
+ * 설비 용량이 달라도 그대로 비교할 수 있어 태양광에서 널리 쓰는 지표다.
+ */
+export const calculateFullLoadHours = (generationKwh, capacityKw) =>
+  capacityKw === 0 ? 0 : Math.round((generationKwh / capacityKw) * 100) / 100
 
 /** Open-Meteo 응답 한 건을 사업장 발전 예측으로 변환한다. */
 const toSolarItem = (site, data) => {
@@ -49,7 +46,7 @@ const toSolarItem = (site, data) => {
   const radiationToday = Math.round((daily.shortwave_radiation_sum[0] / 3.6) * 100) / 100
 
   const generationToday = estimateGeneration(radiationToday, site.capacityKw)
-  const baselineGeneration = estimateBaselineGeneration(site.capacityKw)
+
 
   return {
     region: site.region,
@@ -59,10 +56,7 @@ const toSolarItem = (site, data) => {
     radiationToday,
     sunshineHours: Math.round((daily.sunshine_duration[0] / 3600) * 10) / 10,
     generationToday,
-    baselineGeneration,
-    // 기준 대비 오늘 발전 여건 (%). 상한을 두지 않아 좋은 날은 100%를 넘는다.
-    utilization:
-      baselineGeneration === 0 ? 0 : Math.round((generationToday / baselineGeneration) * 100),
+    fullLoadHours: calculateFullLoadHours(generationToday, site.capacityKw),
     hourly: hourly.time.slice(0, 24).map((time, index) => ({
       time,
       radiation: hourly.shortwave_radiation[index],
@@ -99,12 +93,12 @@ export const useSolarStore = defineStore('solar', () => {
   )
 
   /**
-   * 설비 대비 발전 여건이 좋은 순으로 정렬한다.
-   * 비율이 같으면 발전량 절대값이 큰 사업장을 앞에 둔다.
+   * 등가가동시간이 긴 순으로 정렬한다.
+   * 같으면 발전량 절대값이 큰 사업장을 앞에 둔다.
    */
   const rankedSites = computed(() =>
     [...solarList.value].sort(
-      (a, b) => b.utilization - a.utilization || b.generationToday - a.generationToday,
+      (a, b) => b.fullLoadHours - a.fullLoadHours || b.generationToday - a.generationToday,
     ),
   )
 
@@ -201,7 +195,6 @@ export const useSolarStore = defineStore('solar', () => {
     actualError,
     powerUnitPrice: POWER_UNIT_PRICE,
     performanceRatio: PERFORMANCE_RATIO,
-    referenceRadiation: REFERENCE_RADIATION,
     rankedSites,
     totalGenerationToday,
     expectedSavingToday,

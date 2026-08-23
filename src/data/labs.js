@@ -108,7 +108,7 @@ export const LABS = [
     customization: [
       'OpenWeather 5 Day / 3 Hour Forecast로 단기 예보를 추가했다.',
       'Open-Meteo Air Quality로 미세먼지 농도를 받아 환경부 통합대기환경지수(CAI) 기준으로 등급을 계산한다.',
-      'Open-Meteo Forecast의 일사량으로 태양광 발전량을 추정한다.',
+      'Open-Meteo Forecast의 일사량으로 태양광 발전량을 추정하고, 설비 용량이 다른 사업장을 등가가동시간으로 비교한다.',
       'Frankfurter 환율 API로 원자재 비용 변수를 추가했다.',
       'API 호출을 services 폴더로 분리해 화면과 통신 코드를 나눴다.',
     ],

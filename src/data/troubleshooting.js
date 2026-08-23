@@ -166,6 +166,20 @@ export const TROUBLES = [
     code: "new URLSearchParams({ serviceKey: process.env.DATA_GO_KR_API_KEY })",
   },
   {
+    id: 'capacity-compare',
+    category: '지표 설계',
+    step: 6,
+    title: '설비 용량이 다른 사업장의 발전 여건을 비교하는 방법',
+    symptom: '설비가 큰 사업장이 항상 발전량이 많아, 어디가 오늘 여건이 좋은지 알 수 없었다.',
+    cause: [
+      '임의로 정한 일사량 기준값(5kWh/m²)과 견주어 백분율로 보여줬는데, 기준을 어떻게 잡느냐에 따라 값이 통째로 달라진다.',
+      '맑은 날에는 여섯 곳 중 다섯 곳이 기준을 넘어 모두 100%로 표시되어 구분이 되지 않았다.',
+    ],
+    solution:
+      '태양광에서 널리 쓰는 등가가동시간(발전량 ÷ 설비용량)으로 바꿨다. 정격 출력으로 몇 시간 돌린 것과 같은지를 뜻하며, 임의 가정이 없고 설비 크기와 무관하게 비교된다. 정렬은 등가가동시간이 긴 순으로 하고 같으면 발전량이 큰 사업장을 앞에 둔다. kWp는 출력, kWh는 에너지라 서로 비교할 수 있는 값이 아니라는 점도 함께 정리했다.',
+    code: 'const fullLoadHours = generationKwh / capacityKw',
+  },
+  {
     id: 'aqi-standard',
     category: 'API',
     step: 6,

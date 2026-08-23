@@ -12,13 +12,13 @@ const headline = computed(() => {
   const best = solarStore.bestSite
   if (!best) return '태양광 발전 여건을 계산하는 중입니다.'
 
-  return `오늘은 ${best.siteName}의 발전 여건이 가장 좋습니다. (기준 대비 ${best.utilization}%)`
+  return `오늘은 ${best.siteName}의 발전 여건이 가장 좋습니다. (등가가동시간 ${best.fullLoadHours}시간)`
 })
 
-/** 비율이 높을수록 진하게 표시해 한눈에 비교되게 한다. */
-const rateType = (value) => {
-  if (value >= 100) return 'success'
-  if (value >= 70) return 'warning'
+/** 등가가동시간이 길수록 진하게 표시해 한눈에 비교되게 한다. */
+const hourType = (hours) => {
+  if (hours >= 4.5) return 'success'
+  if (hours >= 3) return 'warning'
 
   return 'info'
 }
@@ -64,15 +64,16 @@ const rateType = (value) => {
         <el-table-column label="설비" min-width="80">
           <template #default="{ row }">{{ row.capacityKw }}kWp</template>
         </el-table-column>
-        <el-table-column label="오늘 / 기준" min-width="130">
+        <el-table-column label="오늘 발전량" min-width="110">
           <template #default="{ row }">
-            <strong>{{ formatNumber(row.generationToday) }}</strong>
-            / {{ formatNumber(row.baselineGeneration) }} kWh
+            <strong>{{ formatNumber(row.generationToday) }}</strong> kWh
           </template>
         </el-table-column>
-        <el-table-column label="기준 대비" min-width="90">
+        <el-table-column label="등가가동시간" min-width="110">
           <template #default="{ row }">
-            <el-tag :type="rateType(row.utilization)" size="small">{{ row.utilization }}%</el-tag>
+            <el-tag :type="hourType(row.fullLoadHours)" size="small">
+              {{ row.fullLoadHours }}시간
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="" min-width="80">
@@ -85,9 +86,9 @@ const rateType = (value) => {
       </el-table>
 
       <small class="hint">
-        기준 발전량은 일사량 {{ solarStore.referenceRadiation }}kWh/m²에 설비용량과
-        성능비 {{ solarStore.performanceRatio }}를 적용한 값입니다. 설비 용량이 달라도
-        기준 대비 비율로 사업장 간 여건을 비교할 수 있고, 아주 맑은 날은 100%를 넘습니다.
+        등가가동시간은 오늘 발전량을 설비용량으로 나눈 값으로, 정격 출력으로 몇 시간
+        돌린 것과 같은지를 뜻합니다. 설비 용량이 달라도 그대로 비교할 수 있어
+        발전 여건을 견주는 데 씁니다.
       </small>
     </template>
   </el-card>
