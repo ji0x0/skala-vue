@@ -76,10 +76,10 @@ const hourType = (hours) => {
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="" min-width="80">
+        <el-table-column label="" min-width="95">
           <template #default="{ row }">
             <el-button size="small" plain @click.stop="router.push(`/solar/${row.region}`)">
-              상세
+              상세보기
             </el-button>
           </template>
         </el-table-column>
