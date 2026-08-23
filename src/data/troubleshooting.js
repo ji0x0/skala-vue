@@ -40,6 +40,16 @@ export const TROUBLES = [
     code: '@click-detail="handleDetailJump(item.id)"',
   },
   {
+    id: 'search-includes',
+    category: '컴포넌트',
+    step: 2,
+    title: '검색 중 includes 오류가 발생하는 문제',
+    symptom: '검색창에 문자를 입력하면 undefined와 includes 관련 오류가 발생했다.',
+    cause: ['날씨 객체에는 city 속성이 있는데 검색 로직은 item.name을 읽고 있었다.'],
+    solution: '필터에서 참조하는 속성명을 실제 데이터 구조에 맞췄다.',
+    code: "weatherlist.value.filter((item) => item.city.includes(query))",
+  },
+  {
     id: 'props-destructure',
     category: '컴포넌트',
     step: 3,
@@ -166,6 +176,20 @@ export const TROUBLES = [
     code: "new URLSearchParams({ serviceKey: process.env.DATA_GO_KR_API_KEY })",
   },
   {
+    id: 'exchange-nan',
+    category: 'API',
+    step: 6,
+    title: '환율 카드에 통화가 하나도 표시되지 않고 NaN이 나온 문제',
+    symptom: '환율 카드의 통화 목록이 비어 있고 원/달러 값이 NaN원으로 표시됐다.',
+    cause: [
+      'Frankfurter는 base 통화 1단위당 상대 통화 값을 돌려준다.',
+      '표시 대상 통화 목록에 원화 환산의 기준이 되는 KRW가 빠져 있어 모든 교차 환산 결과가 0이 되었고, 0인 항목을 걸러내는 필터가 전부를 제거했다.',
+    ],
+    solution:
+      '표시용 통화 목록과 조회용 통화 목록을 분리하고, 조회할 때는 KRW를 항상 포함하도록 했다. 교차 환율은 (KRW/USD) ÷ (통화/USD)로 계산하고 엔화는 100단위 표기로 별도 처리했다.',
+    code: "const symbols = [...MAJOR_CURRENCIES.filter((c) => c !== BASE_CURRENCY), 'KRW']",
+  },
+  {
     id: 'capacity-compare',
     category: '지표 설계',
     step: 6,
@@ -202,6 +226,16 @@ export const TROUBLES = [
     cause: ['Open-Meteo의 shortwave_radiation_sum 단위가 kWh/m²가 아니라 MJ/m²였다.'],
     solution: '1kWh = 3.6MJ 이므로 3.6으로 나눠 kWh/m²로 환산한 뒤 설비용량과 성능비를 곱했다.',
     code: 'const radiation = daily.shortwave_radiation_sum[0] / 3.6',
+  },
+  {
+    id: 'statistic-precision',
+    category: '지표 설계',
+    step: 7,
+    title: 'el-statistic이 소수점을 버리는 문제',
+    symptom: '일사량 3.44kWh/m²가 3으로, 일조시간 4.2시간이 4로 표시됐다.',
+    cause: ['Element Plus의 el-statistic은 precision 기본값이 0이라 소수점 이하를 반올림해 버린다.'],
+    solution: '소수점이 의미를 갖는 지표에는 precision을 명시했다.',
+    code: '<el-statistic :value="radiationToday" :precision="2" suffix="kWh/m²" />',
   },
   {
     id: 'spa-404',
@@ -251,6 +285,33 @@ export const TROUBLES = [
     solution:
       'Open-Meteo는 좌표를 쉼표로 이어 보내면 여러 지점을 한 번에 조회할 수 있다. 요청을 6회에서 1회로 줄였다. 응답은 지점 수만큼의 배열로 돌아오므로 배열 여부를 확인해 처리한다.',
     code: 'latitude: sites.map((s) => s.lat).join(\',\')',
+  },
+  {
+    id: 'vercel-domain',
+    category: '배포',
+    step: 8,
+    title: 'Vercel 도메인이 배포할 때마다 되살아나는 문제',
+    symptom: '원하는 이름의 주소를 추가하고 자동 생성된 주소의 별칭을 지웠는데, 다음 배포 후 다시 나타났다.',
+    cause: [
+      '자동 생성된 주소는 배포별 별칭이 아니라 프로젝트 도메인으로 등록되어 있다.',
+      '별칭만 지우면 새 배포에서 프로젝트 설정에 따라 다시 붙는다.',
+    ],
+    solution: '프로젝트 도메인 목록에서 제거해야 완전히 없어진다.',
+    code: null,
+  },
+  {
+    id: 'commit-strikethrough',
+    category: '배포',
+    step: 8,
+    title: 'GitHub 커밋 메시지에 취소선이 생기는 문제',
+    symptom: '커밋 본문에서 범위를 적은 구간이 취소선으로 표시됐다.',
+    cause: [
+      'GitHub Flavored Markdown은 물결표로 감싼 구간을 취소선으로 렌더링한다.',
+      '한국어에서 범위 표기로 쓰는 물결표가 한 줄에 두 번 나오면서 그 사이가 취소선이 됐다.',
+    ],
+    solution:
+      '커밋 메시지에서는 범위를 하이픈으로 적는다. 별표와 밑줄도 같은 이유로 강조 처리될 수 있다.',
+    code: '1-3단계  (물결표 대신 하이픈)',
   },
   {
     id: 'bundle-size',

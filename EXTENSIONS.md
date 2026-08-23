@@ -6,9 +6,6 @@
 
 - 배포 주소: https://skala-vue-factory-daily-briefing.vercel.app
 - 저장소: https://github.com/ji0x0/skala-vue
-- 날씨 애플리케이션: `/Users/jiyeong/workspace/skala-vue`
-- 문법 실습 프로젝트: `/Users/jiyeong/workspace/skala-vue-practices`
-- 원본 백업: `/Users/jiyeong/workspace/skala-vue-backup`
 
 ## 서비스 컨셉
 
@@ -36,7 +33,7 @@
 ├── 서비스 소개 (/about)               컨셉·핵심 가치·판단 기준·사업장·기술 스택
 ├── 실습 아카이브 (/labs)              실습 1-8 타임라인
 │   └── 실습 상세 (/labs/:step)        요구사항·확장 내역·실행 화면
-├── 트러블슈팅 (/troubleshooting)      개발 중 겪은 문제 21건
+├── 트러블슈팅 (/troubleshooting)      개발 중 겪은 문제 27건
 └── 404 (Catch-all)
 ```
 
@@ -85,7 +82,7 @@
 - `SolarDetailView.vue` — `/solar/:region`. 시간대별 일사량 예보와 전력거래소 실측 발전량을 막대 그래프로 비교한다.
 - `LabArchiveView.vue` — `/labs`. 실습 1-8단계를 `el-timeline`으로 정리했다.
 - `LabDetailView.vue` — `/labs/:step`. 단계별 요구사항과 개인 확장 내역을 보여주고, **8단계 모두 실행 화면을 제공한다.**
-- `TroubleshootingView.vue` — `/troubleshooting`. 트러블슈팅 21건을 카테고리 필터와 검색으로 탐색한다.
+- `TroubleshootingView.vue` — `/troubleshooting`. 트러블슈팅 27건을 카테고리 필터와 검색으로 탐색한다.
 
 라우터에는 `meta.title`(문서 제목 자동 변경)과 `scrollBehavior`(화면 전환 시 상단 이동)를 추가했고, 8개 View 전부에 지연 로딩을 적용했다.
 
@@ -162,6 +159,8 @@
 - 상태 옆 상세보기 버튼에 `@click.stop`을 붙여 행 클릭 이벤트와 분리했다.
 - 표 아래 상태바를 두어 고른 사업장을 알리고, 아무것도 고르지 않았을 때는 등록된 사업장 수를 표시한다.
 - 트러블슈팅 검색도 같은 `SearchBar` 컴포넌트를 쓴다. `placeholder`와 `echoLabel` props를 추가해 두 곳에서 함께 쓸 수 있게 했고, 기존 props와 emits 구조는 그대로 유지했다.
+- 환경 리스크 카드에 표 보기와 카드 보기 전환을 두었다. 카드 보기는 실습 3에서 만든 `BaseDashboardCard`와 `WeatherCard`를 그대로 쓰며, 카드 선택과 상세보기 이벤트도 당시 정의한 `select-card`·`click-detail`을 그대로 받는다.
+- 설정 패널의 단위 전환은 과제 5에서 만든 `UnitToggler` 부품을 그대로 쓴다. 패널은 여기에 테마 전환을 더한 껍데기 역할만 한다.
 
 ### Element Plus 적용 범위 (과제 7)
 

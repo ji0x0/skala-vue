@@ -28,7 +28,7 @@ SKALA Full-Stack Engineering 과정의 Vue.js 실습 과제 1-8을 하나의 서
 | `/solar/:region` | 태양광 발전 상세 | 시간대별 일사량 예보와 전력거래소 실측 비교 |
 | `/about` | 서비스 소개 | 컨셉, 판단 기준, 사업장, 기술 스택 |
 | `/labs`, `/labs/:step` | 실습 아카이브 | 실습 1-8 진행 기록과 실행 화면 |
-| `/troubleshooting` | 트러블슈팅 | 개발 중 겪은 문제 21건 |
+| `/troubleshooting` | 트러블슈팅 | 개발 중 겪은 문제 27건 |
 | 그 외 | 404 | Catch-all 라우트 |
 
 ## 아키텍처
@@ -105,7 +105,7 @@ grep -r "실제_키_값" dist/assets/    # 결과가 없어야 정상
 | --- | --- | --- |
 | 1. Vue Syntax | v-for, v-if, 이벤트 수식어로 목업 구성 | 도시를 6개로 늘리고 습도·풍속 추가. `v-model` 드롭다운 두 개로 지역별 날씨를 비교하는 섹션 추가. 여기서 익힌 `:value`·`@input` 검색과 `@click.stop`, 상태바 패턴을 실제 운영 화면에도 적용 |
 | 2. Composition API | ref, computed, watch, watchEffect | 경보 기준 온도와 정렬 기준 상태 추가. 정렬 결과와 공정 리스크 요약 Computed 2종, Watcher 2종 추가 |
-| 3. Vue Components | 4개 컴포넌트로 분리, scoped 스타일 | 전역 CSS에 몰려 있던 카드·검색창 스타일을 각 컴포넌트로 이전. SearchBar에 props를 더해 브리핑·트러블슈팅 검색에서 재사용. 대시보드 카드 4종, 실습 데모 5종, 내비게이션을 별도 컴포넌트로 작성 |
+| 3. Vue Components | 4개 컴포넌트로 분리, scoped 스타일 | 전역 CSS에 몰려 있던 카드·검색창 스타일을 각 컴포넌트로 이전. SearchBar에 props를 더해 브리핑·트러블슈팅 검색에서 재사용하고, 브리핑 화면의 카드 보기에서 BaseDashboardCard와 WeatherCard를 그대로 사용. 대시보드 카드 4종, 실습 데모 5종, 내비게이션을 별도 컴포넌트로 작성 |
 | 4. Vue Router | 지연 로딩, Catch-all, 동적 경로 | View를 4개에서 8개로 확장(태양광 상세, 실습 아카이브, 실습 상세, 트러블슈팅). 전체 View 지연 로딩, `meta.title`로 문서 제목 자동 변경, 화면 전환 시 스크롤 초기화 |
 | 5. Pinia | configStore 1종 | Store 4종 추가(날씨, 태양광, 유가, 환율). configStore에 화면 테마를 추가하고 설정을 `localStorage`에 저장해 재방문 시에도 유지 |
 | 6. Axios | OpenWeather 연동 및 API 확장 | 외부 API 7종 연동. 요청 함수를 `services/`로 분리. 좌표가 필요한 요청은 순차, 독립적인 요청은 `Promise.all`로 병렬 처리 |

@@ -1,4 +1,5 @@
 <script setup>
+import UnitToggler from '@/components/exercise/UnitToggler.vue'
 import { useConfigStore } from '@/stores/configStore.js'
 
 const configStore = useConfigStore()
@@ -29,19 +30,8 @@ const configStore = useConfigStore()
 
       <el-divider />
 
-      <div class="setting-row">
-        <div class="setting-label">
-          <strong>온도 단위</strong>
-          <small>{{ configStore.unitLabel }}</small>
-        </div>
-        <el-switch
-          :model-value="configStore.unit === 'fahrenheit'"
-          active-text="℉"
-          inactive-text="℃"
-          inline-prompt
-          @change="configStore.toggleUnit"
-        />
-      </div>
+      <!-- 단위 전환은 과제 5에서 만든 UnitToggler 부품을 그대로 쓴다. -->
+      <UnitToggler />
     </div>
   </el-popover>
 </template>

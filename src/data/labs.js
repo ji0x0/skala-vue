@@ -12,7 +12,7 @@ export const LABS = [
       'v-for 배열 렌더링과 :key에 id 바인딩',
       '기온 25도 기준 조건부 렌더링(v-if / v-else)',
       ':value와 @input을 이용한 한글 검색 입력 처리',
-      '카드 클릭 시 상태바 갱신, 상세보기는 @click.stop으로 버블링 차단',
+      '카드 클릭 시 상태바 갱신, 상세보기는 @click.stop으로 버블링을 막고 window.alert 표시',
     ],
     customization: [
       '도시를 6개로 늘리고 습도·풍속 필드를 추가했다.',
@@ -68,11 +68,13 @@ export const LABS = [
       'App.vue에 RouterLink 내비게이션과 RouterView 배치',
       '상세보기에서 window.alert를 제거하고 router.push로 이동',
       ':cityId 동적 경로를 받아 상세 화면 구성',
+      'WeatherAboutView에 서비스 소개 내용과 메인 대시보드로 돌아가는 링크 작성',
     ],
     customization: [
-      '4개 View 전부를 지연 로딩으로 전환해 화면별 코드 분할을 적용했다.',
+      'View를 4개에서 8개로 늘리고 전부 지연 로딩으로 전환해 화면별 코드 분할을 적용했다.',
       '실습 요구 View 외에 태양광 상세·실습 아카이브·실습 상세·트러블슈팅 View를 추가했다.',
       '실습 컴포넌트를 components/exercise 폴더로 격리했다.',
+      '라우터에 meta.title을 두어 화면마다 탭 제목이 바뀌게 하고, 화면 전환 시 스크롤을 위로 올리도록 scrollBehavior를 설정했다.',
     ],
     liveComponent: 'Lab4RouterDemo',
   },
@@ -88,7 +90,8 @@ export const LABS = [
     ],
     customization: [
       'weatherStore를 추가해 사업장 날씨와 공정 위험 요약을 관리한다.',
-      'solarStore를 추가해 일사량과 예상 발전량을 계산한다.',
+      'solarStore를 추가해 일사량과 예상 발전량, 등가가동시간을 계산한다.',
+      'fuelStore를 추가해 전국·지역 유가와 최근 추이를 관리한다.',
       'exchangeStore를 추가해 환율과 등락률, 비용 코멘트를 관리한다.',
       'configStore에 화면 테마(라이트/다크) state와 action을 추가하고, 설정을 localStorage에 저장해 다음 방문에도 유지되게 했다.',
       '단위 변경 버튼을 설정 변경 패널로 바꿔 테마와 온도 단위를 한곳에서 조정하도록 했다.',
@@ -139,6 +142,8 @@ export const LABS = [
       '프로젝트 빌드 후 정적 호스팅',
     ],
     customization: [
+      '키가 필요한 API를 api/ 서버리스 함수 뒤로 옮기고 환경변수에서 VITE_ 접두사를 제거해, 빌드 결과물과 개발자 도구에 키가 노출되지 않도록 했다.',
+      'vite.config.js에 플러그인을 추가해 개발 서버에서도 같은 서버리스 함수를 실행하도록 했다. npm run dev만으로 개발할 수 있다.',
       '.env를 .gitignore에 등록하고 .env.example로 필요한 키를 안내한다.',
       'SPA 직접 주소 접속을 위해 vercel.json에 rewrite 규칙을 추가했다.',
       '단계별 백업 파일과 임시 폴더를 .gitignore에 추가해 저장소를 정리했다.',

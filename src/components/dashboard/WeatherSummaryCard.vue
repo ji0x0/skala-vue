@@ -1,7 +1,9 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
 import SearchBar from '@/components/exercise/SearchBar.vue'
+import WeatherCard from '@/components/exercise/WeatherCard.vue'
 import { useConfigStore } from '@/stores/configStore.js'
 import { useWeatherStore } from '@/stores/weatherStore.js'
 
@@ -12,6 +14,9 @@ const weatherStore = useWeatherStore()
 // 검색어와 상태바 문구를 반응형 상태로 둔다. (실습 1·2와 같은 구조)
 const searchQuery = ref('')
 const selectedSiteInfo = ref('')
+
+// 표로 볼지 카드로 볼지 고른다. 카드 보기는 실습 3에서 만든 부품을 그대로 쓴다.
+const viewMode = ref('table')
 
 const convertTemp = (temp) => {
   if (configStore.unit === 'fahrenheit') {
@@ -68,9 +73,14 @@ const defaultStatus = computed(
 
 const statusText = computed(() => selectedSiteInfo.value || defaultStatus.value)
 
-// 행을 누르면 상태바 문구가 바뀐다.
+// 행이나 카드를 누르면 상태바 문구가 바뀐다.
 const handleSelectSite = (item) => {
   selectedSiteInfo.value = `${item.siteName}이 선택되었습니다.`
+}
+
+// WeatherCard는 완성된 문구를 넘겨주므로 그대로 받는다.
+const handleCardSelect = (message) => {
+  selectedSiteInfo.value = message
 }
 
 // 상세보기는 행 클릭과 겹치지 않도록 버블링을 막고 이동한다.
@@ -126,8 +136,16 @@ watch(selectedSiteInfo, (newInfo) => {
 
       <p v-if="searchNotice" class="search-notice">{{ searchNotice }}</p>
 
+      <div class="view-switch">
+        <el-radio-group v-model="viewMode" size="small">
+          <el-radio-button value="table">표로 보기</el-radio-button>
+          <el-radio-button value="card">카드로 보기</el-radio-button>
+        </el-radio-group>
+        <small>카드 보기는 실습 3에서 만든 컴포넌트를 그대로 사용합니다.</small>
+      </div>
+
       <el-table
-        v-if="filteredSites.length"
+        v-if="viewMode === 'table' && filteredSites.length"
         :data="filteredSites"
         size="small"
         style="width: 100%"
@@ -153,6 +171,17 @@ watch(selectedSiteInfo, (newInfo) => {
           </template>
         </el-table-column>
       </el-table>
+
+      <!-- 카드 보기: 실습 3의 BaseDashboardCard와 WeatherCard를 재사용한다. -->
+      <BaseDashboardCard v-if="viewMode === 'card' && filteredSites.length">
+        <WeatherCard
+          v-for="item in filteredSites"
+          :key="item.id"
+          :city-item="{ ...item, city: item.siteName }"
+          @select-card="handleCardSelect"
+          @click-detail="handleDetail"
+        />
+      </BaseDashboardCard>
 
       <!-- 상태바: 선택 전에는 등록 사업장 수를, 선택 후에는 고른 사업장을 알린다. -->
       <div class="status-bar">{{ statusText }}</div>
@@ -182,6 +211,18 @@ watch(selectedSiteInfo, (newInfo) => {
   padding: 12px;
   border-radius: 8px;
   background-color: var(--el-fill-color-light);
+}
+
+.view-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 14px 0 10px;
+}
+
+.view-switch small {
+  color: var(--el-text-color-secondary);
 }
 
 .search-notice {
