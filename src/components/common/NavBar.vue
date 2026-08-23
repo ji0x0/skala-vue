@@ -47,10 +47,11 @@ const handleSelect = (index) => {
       class="nav-menu"
       mode="horizontal"
       :ellipsis="false"
-      @select="handleSelect"
     >
       <el-menu-item v-for="menu in MENUS" :key="menu.index" :index="menu.index">
-        {{ menu.icon }} {{ menu.label }}
+        <RouterLink class="nav-link" :to="menu.index">
+          {{ menu.icon }} {{ menu.label }}
+        </RouterLink>
       </el-menu-item>
 
       <!-- 메뉴 오른쪽 끝을 채워 설정 버튼을 끝으로 밀어낸다. -->
@@ -119,6 +120,14 @@ const handleSelect = (index) => {
   padding: 0 14px;
   font-size: 13px;
   line-height: 48px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
 }
 
 /* 메뉴 안에 넣은 요소들이 항목처럼 보이지 않도록 정리한다. */

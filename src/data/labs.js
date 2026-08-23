@@ -13,6 +13,7 @@ export const LABS = [
       '기온 25도 기준 조건부 렌더링(v-if / v-else)',
       ':value와 @input을 이용한 한글 검색 입력 처리',
       '카드 클릭 시 상태바 갱신, 상세보기는 @click.stop으로 버블링을 막고 window.alert 표시',
+      '본인 데이터를 추가해 날씨 목업 확장',
     ],
     customization: [
       '도시를 6개로 늘리고 습도·풍속 필드를 추가했다.',
@@ -31,6 +32,7 @@ export const LABS = [
       'computed로 검색어에 맞는 filteredWeatherList 생성',
       'watch로 선택 도시 변화, watchEffect로 검색어 변화를 콘솔에 기록',
       '검색어 없음·결과 있음·결과 없음 세 가지 경우를 화면에 구분 표시',
+      '추가 반응형 상태, Computed, Watcher 작성',
     ],
     customization: [
       'alertThreshold(공정 경보 기준 온도)와 sortOrder 반응형 상태를 추가했다.',
@@ -50,6 +52,7 @@ export const LABS = [
       'SearchBar는 props로 받고 update-query 이벤트로 부모에 전달',
       'WeatherCard는 select-card·click-detail 이벤트를 부모에 전달',
       '컴포넌트 디자인을 각각 <style scoped>로 분리',
+      '목업 기능을 위한 추가 컴포넌트 작성 또는 기존 컴포넌트 세분화',
     ],
     customization: [
       '전역 CSS에 몰려 있던 카드·검색창 스타일을 각 컴포넌트의 scoped 스타일로 옮겼다.',
@@ -69,6 +72,7 @@ export const LABS = [
       '상세보기에서 window.alert를 제거하고 router.push로 이동',
       ':cityId 동적 경로를 받아 상세 화면 구성',
       'WeatherAboutView에 서비스 소개 내용과 메인 대시보드로 돌아가는 링크 작성',
+      '추가 View를 작성하고 라우트 등록',
     ],
     customization: [
       'View를 4개에서 8개로 늘리고 전부 지연 로딩으로 전환해 화면별 코드 분할을 적용했다.',
@@ -87,6 +91,7 @@ export const LABS = [
       'configStore에 unit state, unitSymbol getter, toggleUnit action 작성',
       '내비게이션 바 옆에 UnitToggler 배치',
       '메인과 상세 화면 모두에 단위 설정 반영',
+      '추가 Store를 작성하거나 configStore의 state·getter·action 확장',
     ],
     customization: [
       'weatherStore를 추가해 사업장 날씨와 공정 위험 요약을 관리한다.',
@@ -110,7 +115,7 @@ export const LABS = [
     ],
     customization: [
       'OpenWeather 5 Day / 3 Hour Forecast로 단기 예보를 추가했다.',
-      'Open-Meteo Air Quality로 미세먼지 농도를 받아 환경부 통합대기환경지수(CAI) 기준으로 등급을 계산한다.',
+      'Open-Meteo Air Quality의 PM10·PM2.5 농도를 국내 CAI 구간에 대입해 간이 등급을 계산한다.',
       'Open-Meteo Forecast의 일사량으로 태양광 발전량을 추정하고, 설비 용량이 다른 사업장을 등가가동시간으로 비교한다.',
       'Frankfurter 환율 API로 원자재 비용 변수를 추가했다.',
       'API 호출을 services 폴더로 분리해 화면과 통신 코드를 나눴다.',

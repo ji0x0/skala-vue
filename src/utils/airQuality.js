@@ -1,10 +1,12 @@
 /**
- * 한국 통합대기환경지수(CAI) 계산.
+ * PM10·PM2.5 기반 간이 대기질 지수 계산.
  *
  * Open-Meteo가 내려주는 european_aqi는 유럽 기준이라 국내 예보 등급과 어긋난다.
- * 같은 응답에 들어 있는 PM10·PM2.5 농도로 환경부 기준의 CAI를 직접 계산한다.
+ * 같은 응답에 들어 있는 PM10·PM2.5 농도를 국내 CAI 구간에 대입한다.
+ * 전체 오염물질과 복합오염 보정은 포함하지 않는다.
  *
- * 환경부 통합대기환경지수 구간 (24시간 평균 기준, ㎍/㎥)
+ * 환경부 통합대기환경지수 구간 (24시간 평균 기준, ㎍/㎥)을 참고한다.
+ * 현재 입력은 Open-Meteo의 예보 농도이므로 공식 측정소 CAI와 같지 않을 수 있다.
  *   PM10  좋음 0-30   보통 31-80   나쁨 81-150   매우나쁨 151 이상
  *   PM2.5 좋음 0-15   보통 16-35   나쁨 36-75    매우나쁨 76 이상
  * 지수 구간은 좋음 0-50, 보통 51-100, 나쁨 101-250, 매우나쁨 251-500이다.
@@ -30,12 +32,14 @@ const BREAKPOINTS = {
 const toIndex = (value, table) => {
   if (value === null || value === undefined || Number.isNaN(value)) return null
 
-  const row = table.find(([low, high]) => value >= low && value <= high)
+  // 구간표가 정수 기준이므로 소수 농도는 버림 처리해 30-31 사이 같은 공백을 막는다.
+  const concentration = Math.floor(value)
+  const row = table.find(([low, high]) => concentration >= low && concentration <= high)
   if (!row) return 500
 
   const [cLow, cHigh, iLow, iHigh] = row
 
-  return Math.round(((iHigh - iLow) / (cHigh - cLow)) * (value - cLow) + iLow)
+  return Math.round(((iHigh - iLow) / (cHigh - cLow)) * (concentration - cLow) + iLow)
 }
 
 /** 지수를 등급으로 바꾼다. */

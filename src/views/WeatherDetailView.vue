@@ -48,7 +48,7 @@ const processAdvice = computed(() => {
 /**
  * 대기질은 국내 기준으로 판단한다.
  * Open-Meteo의 european_aqi는 유럽 기준이라 국내 예보 등급과 어긋나므로,
- * 같은 응답의 PM10·PM2.5 농도로 환경부 통합대기환경지수(CAI)를 계산한다.
+ * 같은 응답의 PM10·PM2.5 농도로 간이 대기질 지수를 계산한다.
  */
 const cai = computed(() => {
   if (!airQuality.value) return { index: null, indexPm10: null, indexPm25: null, dominant: null }
@@ -196,7 +196,7 @@ onMounted(async () => {
           </div>
         </template>
         <div class="stat-row">
-          <el-statistic title="통합대기환경지수" :value="cai.index ?? 0" />
+          <el-statistic title="미세먼지 간이 지수" :value="cai.index ?? 0" />
           <el-statistic title="미세먼지 PM10" :value="airQuality.pm10" suffix="㎍/㎥" />
           <el-statistic title="초미세먼지 PM2.5" :value="airQuality.pm2_5" suffix="㎍/㎥" />
         </div>
@@ -204,7 +204,7 @@ onMounted(async () => {
         <p v-if="aqiLevel.advice" class="advice-line">{{ aqiLevel.advice }}</p>
 
         <small class="hint">
-          환경부 통합대기환경지수(CAI) 기준으로 계산했습니다.
+          PM10·PM2.5를 국내 CAI 구간에 대입한 간이 지수입니다.
           <template v-if="cai.dominant">{{ cai.dominant }}가 등급을 결정했습니다.</template>
           농도 자료는 Open-Meteo Air Quality(CAMS)를 사용합니다.
         </small>
