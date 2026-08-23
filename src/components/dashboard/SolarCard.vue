@@ -8,19 +8,20 @@ const solarStore = useSolarStore()
 
 const formatNumber = (value) => new Intl.NumberFormat('ko-KR').format(Math.round(value))
 
-/** 설비용량 대비 발전 효율을 막대 비율로 환산한다. */
-const utilization = (item) => {
-  const maxPossible = item.capacityKw * 5 * 0.8
-  if (maxPossible === 0) return 0
-
-  return Math.min(100, Math.round((item.generationToday / maxPossible) * 100))
-}
-
 const headline = computed(() => {
-  if (!solarStore.bestSite) return '태양광 발전 여건을 계산하는 중입니다.'
+  const best = solarStore.bestSite
+  if (!best) return '태양광 발전 여건을 계산하는 중입니다.'
 
-  return `오늘은 ${solarStore.bestSite.siteName}의 발전 여건이 가장 좋습니다.`
+  return `오늘은 ${best.siteName}의 발전 여건이 가장 좋습니다. (기준 대비 ${best.utilization}%)`
 })
+
+/** 비율이 높을수록 진하게 표시해 한눈에 비교되게 한다. */
+const rateType = (value) => {
+  if (value >= 100) return 'success'
+  if (value >= 70) return 'warning'
+
+  return 'info'
+}
 </script>
 
 <template>
@@ -57,23 +58,36 @@ const headline = computed(() => {
         />
       </div>
 
-      <div v-for="item in solarStore.solarList" :key="item.region" class="solar-row">
-        <div class="solar-label">
-          <strong>{{ item.siteName }}</strong>
-          <small>{{ item.capacityKw }}kWp · 일조 {{ item.sunshineHours }}h</small>
-        </div>
-        <el-progress
-          :percentage="utilization(item)"
-          :stroke-width="14"
-          :format="() => `${formatNumber(item.generationToday)}kWh`"
-        />
-        <el-button link type="primary" @click="router.push(`/solar/${item.region}`)">
-          상세
-        </el-button>
-      </div>
+      <!-- 설비 대비 발전 여건이 좋은 순. 비율이 같으면 발전량이 많은 곳을 앞에 둔다. -->
+      <el-table :data="solarStore.rankedSites" size="small" style="width: 100%">
+        <el-table-column prop="siteName" label="사업장" min-width="130" />
+        <el-table-column label="설비" min-width="80">
+          <template #default="{ row }">{{ row.capacityKw }}kWp</template>
+        </el-table-column>
+        <el-table-column label="오늘 / 기준" min-width="130">
+          <template #default="{ row }">
+            <strong>{{ formatNumber(row.generationToday) }}</strong>
+            / {{ formatNumber(row.baselineGeneration) }} kWh
+          </template>
+        </el-table-column>
+        <el-table-column label="기준 대비" min-width="90">
+          <template #default="{ row }">
+            <el-tag :type="rateType(row.utilization)" size="small">{{ row.utilization }}%</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="" min-width="80">
+          <template #default="{ row }">
+            <el-button size="small" plain @click.stop="router.push(`/solar/${row.region}`)">
+              상세
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
       <small class="hint">
-        발전량은 Open-Meteo 일사량 예보에 설비용량과 성능비(0.8)를 적용한 추정치입니다.
+        기준 발전량은 일사량 {{ solarStore.referenceRadiation }}kWh/m²에 설비용량과
+        성능비 {{ solarStore.performanceRatio }}를 적용한 값입니다. 설비 용량이 달라도
+        기준 대비 비율로 사업장 간 여건을 비교할 수 있고, 아주 맑은 날은 100%를 넘습니다.
       </small>
     </template>
   </el-card>
@@ -103,27 +117,10 @@ const headline = computed(() => {
   background-color: var(--el-color-warning-light-9);
 }
 
-.solar-row {
-  display: grid;
-  grid-template-columns: 170px 1fr 56px;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 0;
-}
-
-.solar-label {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.3;
-}
-
-.solar-label small {
-  color: var(--el-text-color-secondary);
-}
-
 .hint {
   display: block;
-  margin-top: 10px;
+  margin-top: 12px;
   color: var(--el-text-color-secondary);
+  line-height: 1.6;
 }
 </style>

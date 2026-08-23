@@ -57,6 +57,11 @@ const metricRules = computed(() => [
     note: '설비용량은 일사량 1,000W/m² 기준으로 정의되어 그대로 곱합니다.',
   },
   {
+    metric: '사업장별 기준 발전량',
+    formula: `일사량 ${solarStore.referenceRadiation}kWh/m² × 설비용량(kWp) × 성능비 ${solarStore.performanceRatio}`,
+    note: '설비 용량이 서로 달라 절대량만으로는 비교할 수 없어, 오늘 발전량을 이 값과 견줘 비율로 보여줍니다. 아주 맑은 날은 100%를 넘습니다.',
+  },
+  {
     metric: '전력비 절감액',
     formula: `예상 발전량(kWh) × ${solarStore.powerUnitPrice}원`,
     note: '산업용 전력 단가 가정치입니다.',
